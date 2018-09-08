@@ -4,7 +4,7 @@
 <compilerSourcePath/>
 <libraryPath defaultLinkType="1">
 <libraryPathEntry kind="4" path=""/>
-<libraryPathEntry kind="3" linkType="1" path="/FlexReport/bin/FlexReport.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="C:/RAMON/FUENTES/FLEX/FlexReport/bin/FlexReport.swc" useDefaultLinkType="false"/>
 <libraryPathEntry kind="1" linkType="1" path="libs"/>
 </libraryPath>
 <sourceAttachmentPath/>
