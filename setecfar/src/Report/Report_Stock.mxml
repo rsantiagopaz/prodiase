@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report creationPolicy="all" xmlns="org.print.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="595" height="842">
+	<mx:XML id="xmlModel" format="e4x"/>
+	<PrintComponent width="495" height="50">
+		<mx:Label textAlign="center" x="0" y="0" text="{xmlModel.@titulo}" width="495"/>
+		<mx:Label x="265" y="32" text="Pto.rep."/>
+		<mx:Label x="350" y="32" text="Disp.real"/>
+		<mx:Label x="430" y="32" text="Disp.virtual"/>
+	</PrintComponent>
+	<Body creationPolicy="all" id="body" width="100%" height="100%">
+		<ReportDataGrid borderStyle="none" showHeaders="false" variableRowHeight="true" id="rdg" width="100%" sizeToPage="true" dataProvider="{xmlModel.row}">
+			<columns>
+				<mx:DataGridColumn>
+				<mx:itemRenderer>
+				<mx:Component>
+					<mx:Canvas height="115">
+						<mx:FormItem label="Producto:" y="15" x="0">
+							<mx:Label text="{data.@descripcion}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Tipo prod.:" y="15" x="300">
+							<mx:Label text="{data.@tipo_producto}"/>
+						</mx:FormItem>
+						<ReportDataGrid borderStyle="none" showHeaders="false" id="rdg" y="30" width="100%" sizeToPage="true" dataProvider="{data.row}">
+							<columns>
+								<mx:DataGridColumn headerText="Deposito" dataField="@deposito" width="250"/>
+								<mx:DataGridColumn headerText="Punto rep." dataField="@pto_reposicion" textAlign="right"/>
+								<mx:DataGridColumn headerText="Disp.real" dataField="@disponible_real" textAlign="right"/>
+								<mx:DataGridColumn headerText="Disp.virtual" dataField="@disponible_virtual" textAlign="right"/>
+							</columns>
+						</ReportDataGrid>
+					</mx:Canvas>
+				</mx:Component>
+				</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</columns>
+		</ReportDataGrid>
+	</Body>
+	<PrintComponent width="100%" height="18">
+		<mx:Label text="Página {pageNumber}" fontSize="12" right="0" top="0"/>
+	</PrintComponent>
+</Report>

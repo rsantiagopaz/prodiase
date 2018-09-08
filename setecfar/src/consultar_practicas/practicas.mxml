@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="fncInit()" layout="vertical" horizontalAlign="center">
+<mx:Metadata>
+	[Event(name="eveModulosHttpsResult")]
+	[Event(name="SelectPrincipal")]
+</mx:Metadata>
+	<mx:Script source="practicas_as.as" />
+	<mx:Panel title="Consultar Nomenclador de Estudios y Prácticas" horizontalAlign="center">
+		<mx:Form>
+			<mx:FormHeading label="Estudios y Prácticas"/>
+			<mx:HBox>
+				<mx:FormItem label="Estudio:">
+					<mx:TextInput width="550" id="txtPractica" />
+				</mx:FormItem>
+				<mx:Button label="Buscar" id="btnBuscar"  width="93" height="18" icon="@Embed(source='../img/search.png')"/>
+			</mx:HBox>
+		</mx:Form>
+		<mx:DataGrid height="306" width="730" id="gridEstudios" dataProvider="{httpPracticas.lastResult.practica}" editable="false">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Estudio" dataField="@descripcion" width="430"/>
+				<!--<mx:DataGridColumn headerText="Valor Esperado" dataField="@valor_esperado" width="300"/> -->
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:ControlBar horizontalAlign="right">
+			<mx:Button label="Cerrar" id="btnCerrar"  icon="@Embed(source='../img/close.png')" click="fncCerrar(event)"/>
+		</mx:ControlBar>
+	</mx:Panel>	
+</mx:Module>

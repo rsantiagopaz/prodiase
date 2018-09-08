@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="450" height="178" title="Agrega item tratamiento" xmlns:ns1="com.adobe.flex.extras.controls.*">
+<mx:Metadata>
+	[Event(name="eventAceptar")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+	<mx:Script source="TitleWindow_AgregaTratamiento_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x">
+	<root>
+		<tratamiento id_producto="{autocompleteProducto.selectedItem.@id}" dosis_diaria="{txtDosisDiaria.text}"/>
+	</root>
+	</mx:XML>
+
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	
+	<mx:Label x="10" y="12" text="Producto:"/>
+	<ns1:AutoComplete id="autocompleteProducto" labelField="descrip" x="93" y="10" change="varAutoComplete_change(event)" width="326"/>
+	<mx:Label x="10" y="42" text="Dosis diaria:"/>
+	<mx:TextInput x="93" y="40" id="txtDosisDiaria"/>
+	<mx:ControlBar>
+		<mx:Button label="Aceptar" id="btnAceptar"/>
+		<mx:Button label="Cancelar" id="btnCancelar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

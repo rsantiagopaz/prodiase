@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="846" height="512" xmlns:ns1="com.adobe.flex.extras.controls.*" title="Consulta Pacientes">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+	<mx:Script source="TitleWindow_PacientesX_as.as"/>
+	
+	<mx:XML id="xmlModel" format="e4x"/>
+	
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	
+	<mx:ComboBox labelField="@label" x="41" y="10" width="105" id="cboVer">
+	<mx:dataProvider>
+		<mx:XMLList xmlns="">
+			<item label="x médico:"/>
+			<item label="x producto:"/>
+			<item label="x tipo pacien.:"/>
+		</mx:XMLList>
+	</mx:dataProvider>
+	</mx:ComboBox>
+	<ns1:AutoComplete labelField="descrip" x="154" y="10" width="363" id="autocompleteMedico"/>
+	<mx:Button x="525" y="10" label="Mostrar datos" id="btnMostrarDatos"/>
+	<mx:DataGrid id="dtg" dataProvider="{xmlModel.row}" x="10" y="40" width="806" height="386">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Nombre" dataField="@persona_nombre"/>
+			<mx:DataGridColumn headerText="T.doc." dataField="@tipodoc"/>
+			<mx:DataGridColumn headerText="Nro.doc." dataField="@persona_dni"/>
+			<mx:DataGridColumn headerText="Domicilio" dataField="@persona_domicilio"/>
+			<mx:DataGridColumn headerText="Medico" dataField="@medico"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+	<mx:Label x="10" y="12" text="Ver"/>
+	<mx:Label x="713" y="12" text="Cantidad:"/>
+	<mx:Label x="781" y="12" text="{xmlModel.row.length()}"/>
+	<mx:ControlBar>
+		<mx:Button label="Imprimir" id="btnImprimir"/>
+		<mx:Button label="Cerrar" id="btnCerrar"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

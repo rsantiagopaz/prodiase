@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module creationComplete="Module_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="740" height="446" xmlns:ns1="clases.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			public function label_color(fecha: String, estado: String) : String {
+				var resultado: String;
+				if (estado=="A") {
+					resultado = '<FONT COLOR="#36B870">' + fecha + '</FONT>';
+				} else if (estado=="X") {
+					resultado = '<FONT COLOR="#FF0000">' + fecha + '</FONT>';
+				} else {
+					resultado = fecha;
+				}
+				return resultado;
+			}
+		]]>
+	</mx:Script>
+	<mx:Script source="Module_Entregas_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x"/>
+
+	<mx:Button x="0" y="0" label="Actualizar datos" id="btnActualizarDatos" click="Actualizar();"/>
+	<ns1:DateFieldEs x="127" y="0" id="dtfDesde"/>
+	<ns1:DateFieldEs x="225" y="0" id="dtfHasta"/>	
+	<mx:Button x="363" y="0" label="Nueva entrega a hospital/area..." id="btnNuevoIngreso"/>
+	<mx:DataGrid id="dtgIngresos" dataProvider="{xmlModel.row}" top="30" height="46%" left="0" right="201">
+		<mx:columns>
+<!--			<mx:DataGridColumn headerText="Fecha" dataField="@fecha" width="80"/>-->
+			<mx:DataGridColumn headerText="Fecha" width="135">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox horizontalAlign="center">
+						<mx:Label htmlText="{outerDocument.label_color(data.@fecha, data.@estado)}">
+						</mx:Label>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="Hospital/Area" dataField="@destino"/>
+			<mx:DataGridColumn headerText="Depósito" dataField="@deposito" width="200"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:DataGrid id="dtgItems" dataProvider="{dtgIngresos.selectedItem.row}" height="46%" bottom="0" left="0" right="201">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Producto" dataField="@descripcion"/>
+			<mx:DataGridColumn headerText="Tipo" dataField="@tipo_producto" width="150"/>
+			<mx:DataGridColumn editable="true" headerText="Cantidad" dataField="@cantidad" textAlign="right" width="70"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Button x="606" y="0" enabled="{dtgIngresos.selectedItem != null &amp;&amp; dtgIngresos.selectedItem.@estado == 'A'}" label="Anular entrega..." id="btnAnularEntrega"/>
+</mx:Module>

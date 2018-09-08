@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module creationComplete="Module_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="886" height="482" xmlns:ns1="com.adobe.flex.extras.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			public function label_color(fecha: String, estado: String) : String {
+				var resultado: String;
+				if (estado=="A") {
+					resultado = '<FONT COLOR="#36B870">' + fecha + '</FONT>';
+				} else if (estado=="X") {
+					resultado = '<FONT COLOR="#FF0000">' + fecha + '</FONT>';
+				} else {
+					resultado = fecha;
+				}
+				return resultado;
+			}
+		]]>
+	</mx:Script>
+	<mx:Script source="Module_Principal_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x"/>
+
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+
+	<mx:Panel x="10" y="0" width="737" height="188" layout="absolute" title="Paciente">
+		<mx:Label x="10" y="10" text="Buscar paciente:"/>
+		<ns1:AutoComplete id="autocompletePaciente" labelField="descrip" x="115" y="8" change="varAutoComplete_change(event)" width="503"/>
+		<mx:HRule x="10" y="36" width="697"/>
+		<mx:Button x="626" y="8" label="Ver datos" id="btnVerDatos"/>
+		<mx:Label x="10" y="46" text="Paciente seleccionado:"/>
+		<mx:Label x="312" y="124" text="Fecha ingreso:"/>
+		<mx:Label x="150" y="46" text="{xmlModel.paciente.@persona_nombre}" width="241"/>
+		<mx:Label x="407" y="124" text="{xmlModel.paciente.@fecha_ingreso}" width="189"/>
+		<mx:Label x="10" y="98" text="Domicilio:"/>
+		<mx:Label x="150" y="98" text="{xmlModel.paciente.@persona_domicilio}" width="241"/>
+		<mx:Label x="312" y="72" text="Nro.doc.:"/>
+		<mx:Label x="375" y="72" text="{xmlModel.paciente.@persona_dni}" width="142"/>
+		<mx:Label x="10" y="72" text="Tipo doc.:"/>
+		<mx:Label x="150" y="72" text="{xmlModel.paciente.@tipodoc}" width="114"/>
+		<mx:Label x="10" y="124" text="Fecha nacimiento:"/>
+		<mx:Label x="150" y="124" text="{xmlModel.paciente.@persona_fecha_nacimiento}" width="142"/>
+	</mx:Panel>
+	<mx:Button x="10" y="196" enabled="false" visible="false" label="Nueva entrega..." id="btnNuevaEntrega"/>
+	<mx:DataGrid id="drgEntregas" dataProvider="{xmlModel.paciente.entrega}" x="10" width="316" top="196" bottom="5">
+		<mx:columns>
+<!--			<mx:DataGridColumn headerText="Fecha" dataField="@fecha"/>-->
+			<mx:DataGridColumn headerText="Fecha" width="100">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox horizontalAlign="center">
+						<mx:Label htmlText="{outerDocument.label_color(data.@fecha, data.@estado)}">
+						</mx:Label>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="Depósito" dataField="@deposito"/>
+			<mx:DataGridColumn headerText="" width="30"> 
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:HBox horizontalAlign="center">	
+							<mx:Button id="btnDesactivaritem" width="24" visible="{(data.@estado=='A')}" height="18" icon="@Embed(source='../../img/save.png')" toolTip="Entregar">
+								<mx:click>
+								<![CDATA[
+								import mx.controls.Alert;
+								Alert.show('Desea que el item seleccionado se marque como entregado?', 'Atención', Alert.OK | Alert.CANCEL, null, outerDocument.btnDesactivaritem_click, null, Alert.CANCEL);
+								]]>
+								</mx:click>
+							</mx:Button>
+						</mx:HBox>						
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:DataGrid id="dtgTratamiento" dataProvider="{drgEntregas.selectedItem.item_entrega}" x="334" width="542" bottom="5" top="196">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Producto" dataField="@descripcion" width="300"/>
+			<mx:DataGridColumn headerText="Tipo" dataField="@tipo_producto"/>
+			<mx:DataGridColumn editable="true" headerText="Cantidad" width="60" dataField="@cantidad" textAlign="right"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:Module>

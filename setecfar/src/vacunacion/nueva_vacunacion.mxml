@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="fncInit()" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:clases="clases.*">
+	<mx:Script source="nueva_vacunacion_as.as" />
+	<mx:TitleWindow layout="vertical" verticalAlign="middle" title="Vacunas">
+		<mx:Form>
+				<mx:FormItem label="Vacuna:">
+						<mx:ComboBox prompt="Seleccione" width="324" dataProvider="{_xmlVacunas.vacunas}" labelField="@nombre" id="cmbVacuna"></mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem label="Fecha de Colocación:">
+						<clases:DateFieldEs yearNavigationEnabled="true" width="116" id="dfVacunacion" />
+				</mx:FormItem>
+			</mx:Form>
+			<mx:ControlBar horizontalAlign="center">
+				<mx:Button label="Grabar" id="btnGrabar" icon="@Embed(source='../img/save.png')"/>
+				<mx:Button label="Cancelar" id="btnCancel"  icon="@Embed(source='../img/close.png')"/>
+			</mx:ControlBar>
+	</mx:TitleWindow>
+	<clases:StringValidador_ES id="validFecha" source="{dfVacunacion}" property="text" required="true" />
+	<clases:NumberValidator_ES id="validVacuna" source="{cmbVacuna}" property="selectedIndex" required="true" minValue="1" />
+</mx:Module>

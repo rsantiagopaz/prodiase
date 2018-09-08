@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="fncInit()" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:clases="clases.*">
+	<mx:Script source="busquedapersona_as.as" />
+	<mx:TitleWindow layout="vertical" verticalAlign="middle" title="Búsqueda de Persona">
+		<mx:Form width="489">
+				<mx:Canvas width="457" height="55">
+					<mx:ComboBox x="76" y="10" width="90" id="cbxTipoDoc" dataProvider="{xmlTiposDoc.tipodoc.tipo}"></mx:ComboBox>
+					<mx:Label x="10" y="12" text="Tipo Doc:"/>
+					<mx:Label x="174" y="12" text="Nro Doc:"/>
+					<mx:TextInput x="234" y="10" id="txiNroDoc" restrict="0123456789"/>
+				</mx:Canvas>
+			</mx:Form>
+			<mx:ControlBar horizontalAlign="center">
+				<mx:Button label="Aceptar" id="btnAceptar" icon="@Embed(source='../img/save.png')"/>
+			</mx:ControlBar>
+	</mx:TitleWindow>
+	
+	<clases:NumberValidator_ES id="validTDOC" source="{cbxTipoDoc}" property="selectedIndex" required="true" minValue="1" />
+	<clases:StringValidador_ES id="validNDOC" source="{txiNroDoc}" property="text" required="true" minLength="7" maxLength="10" />
+	<mx:XML xmlns="" id="xmlTiposDoc">
+		<tiposdoc>
+			<tipodoc>
+				<id></id>			
+				<tipo></tipo>
+			</tipodoc>
+			<tipodoc>
+				<id>D</id>			
+				<tipo>DNI</tipo>
+			</tipodoc>
+			<tipodoc>
+				<id>C</id>			
+				<tipo>LC</tipo>
+			</tipodoc>
+			<tipodoc>
+				<id>E</id>			
+				<tipo>LE</tipo>
+			</tipodoc>
+			<tipodoc>
+				<id>F</id>			
+				<tipo>CI</tipo>
+			</tipodoc>
+			<tipodoc>
+				<id>P</id>			
+				<tipo>PAS</tipo>
+			</tipodoc>
+		</tiposdoc>
+	</mx:XML>
+</mx:Module>

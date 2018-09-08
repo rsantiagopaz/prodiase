@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="TitleWindow_creationComplete()" layout="absolute" width="554" height="548" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:Validadores="Validadores.*" xmlns:clases="clases.*" title="Ingreso">
+<mx:Metadata>
+	[Event(name="eventAceptar")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+<mx:Script source="TitleWindow_Ingreso_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x">
+		<pedidos nro_remito="{txtNro_remito.text}" id_deposito="{cboDeposito.selectedItem.@id_deposito}"/>
+	</mx:XML>
+
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	
+	<mx:RadioButton x="10" y="10" label="de proveedor:"  click="txtNro_remito.enabled = true; cboDeposito.enabled = false;" selected="true" id="rdb0"/>
+	<mx:RadioButton x="10" y="40" label="de depósito:" click="txtNro_remito.enabled = false; cboDeposito.enabled = true;" id="rdb1"/>
+	<mx:FormItem label="Nro.Remito:" required="false" x="122" y="10">
+		<mx:TextInput id="txtNro_remito" width="318" maxChars="50"/>
+	</mx:FormItem>
+	<mx:ComboBox x="122" y="40" width="259" enabled="false" id="cboDeposito" labelField="@denominacion" dataProvider="{xmlDepositos.deposito}"></mx:ComboBox>
+	<clases:DateFieldEs x="122" y="84" id="dflFecha"/>
+	
+	<ns1:AutoComplete id="autocompleteProductoStock" change="_varAutoComplete_change(event)" labelField="descrip" width="406" x="10" y="149"/>
+	<mx:NumericStepper id="nstCantidad" x="424" y="149" minimum="1" maximum="10000000"/>
+	<mx:Button x="10" y="177" label="Agregar" id="btnAgregar" click="btnAgregar_click()"/>
+	<mx:DataGrid x="10" y="203" id="dtgItems_ingresos" dataProvider="{xmlModel.items_ingresos}" width="514" height="259">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Producto" dataField="@producto"/>
+			<mx:DataGridColumn headerText="Cantidad" dataField="@cantidad" textAlign="center" width="70"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Button x="452" y="177" label="Eliminar" id="btnEliminar" click="delete xmlModel.items_ingresos[(dtgItems_ingresos.selectedItem as XML).childIndex()];" enabled="{dtgItems_ingresos.selectedItem!=null}"/>
+	<mx:Label x="10" y="123" text="Producto:"/>
+	<mx:Label x="459" y="123" text="Cantidad:"/>
+	<mx:Label x="48" y="86" text="Fecha:"/>
+	<mx:ControlBar>
+		<mx:Button label="Aceptar" id="btnAceptar" click="btnAceptar_click();" />
+		<mx:Button label="Cancelar" id="btnCancelar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

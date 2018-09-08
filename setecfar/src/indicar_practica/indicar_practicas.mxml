@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal" 
+	creationComplete="fncInit()" width="100%" height="100%">
+		<mx:states>
+				<mx:State name="historial">
+						<mx:RemoveChild target="{btnNuevaPractica}"/>
+						<mx:RemoveChild target="{btnCerrar}"/>
+						<mx:SetProperty target="{del}" name="visible" value="false"/>
+						<mx:SetProperty target="{edit}" name="visible" value="false"/>
+						<mx:AddChild relativeTo="{controlbar1}" position="lastChild">
+							<mx:Button label="Cerrar" id="btnCerrarHistorial" icon="@Embed(source='../img/close.png')"/>
+						</mx:AddChild>
+				</mx:State>
+		</mx:states>
+		<mx:Metadata>
+		[Event(name="eveModulosHttpsResult")]
+		[Event(name="eventClose")]
+	</mx:Metadata>
+	<mx:Script source="indicar_practicas_as.as" />
+	<mx:Panel layout="vertical" title="Prescripciones" width="100%" height="100%">
+		<mx:DataGrid id="gridPracticas" width="890"  height="321" variableRowHeight="true" wordWrap="true" dataProvider="{_xmlPracticas.practica}">
+			<mx:columns>
+				<mx:DataGridColumn visible="false" dataField="@id_solicitudes"/>
+				<mx:DataGridColumn visible="false" dataField="@id_ingreso_movimiento_solicitud"/>
+				<mx:DataGridColumn visible="false" dataField="@id_practica"/>
+				<mx:DataGridColumn headerText="Fecha Solicitud" width="120" dataField="@fecha_solicitud"/>
+				<mx:DataGridColumn headerText="Practica" dataField="@descripcion"/>
+				<mx:DataGridColumn headerText="Resultado" dataField="@resultados"/>
+				<mx:DataGridColumn id="edit" headerText="" width="30" visible="true"> 
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalAlign="center">	
+								<mx:Button width="24" height="18" icon="@Embed(source='../img/edit.png')"
+									click="outerDocument.fncEditarPractica()" toolTip="Modificar"
+									/>
+							</mx:HBox>						
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn id="del" headerText="" width="30" visible="true"> 
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalAlign="center">	
+								<mx:Button  width="24" height="18" icon="@Embed(source='../img/del.png')"
+									click="outerDocument.fncEliminarPractica()" toolTip="Eliminar"
+									/>
+							</mx:HBox>						
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:Button label="Nueva Practica" id="btnNuevaPractica" icon="@Embed(source='../img/add.png')"/>
+		<mx:ControlBar horizontalAlign="right" id="controlbar1">
+			<mx:Button label="Cerrar" id="btnCerrar" icon="@Embed(source='../img/close.png')" click="fncCerrar(event)"/>
+		</mx:ControlBar>
+	</mx:Panel>
+</mx:Module>

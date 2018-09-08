@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report creationPolicy="all" xmlns="org.print.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="595" height="842">
+	<mx:XML id="xmlModel" format="e4x"/>
+	<PrintComponent width="495" height="27">
+		<mx:Label textAlign="center" x="0" y="9" text="{xmlModel.@titulo}" width="495"/>
+		<mx:Label x="10" y="9" text="Cantidad:"/>
+		<mx:Label x="60" y="9" text="{xmlModel.row.length()}"/>
+	</PrintComponent>
+	<Body creationPolicy="all" id="body" width="100%" height="100%">
+		<ReportDataGrid showHeaders="false" variableRowHeight="true" id="rdg" width="100%" sizeToPage="true" dataProvider="{xmlModel.row}">
+			<columns>
+				<mx:DataGridColumn>
+				<mx:itemRenderer>
+				<mx:Component>
+					<mx:Canvas>
+						<mx:FormItem label="Nombre:" y="0" x="0">
+							<mx:Label text="{data.@persona_nombre}"/>
+						</mx:FormItem>
+						<mx:FormItem label="T.doc.:" y="15">
+							<mx:Label text="{data.@tipodoc}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Nro.doc.:" y="15" x="110">
+							<mx:Label text="{data.@persona_dni}"/>
+						</mx:FormItem>
+						<mx:FormItem label="F.nac.:" y="15" x="230">
+							<mx:Label text="{data.@persona_fecha_nacimiento}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Estado:" y="15" x="350">
+							<mx:Label text="{data.@estado}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Domicilio:" y="30" x="0">
+							<mx:Label text="{data.@persona_domicilio}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Localidad:" y="45" x="0">
+							<mx:Label text="{data.@localidad}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Médico:" y="60" x="0">
+							<mx:Label text="{data.@medico}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Trat.realiz.:" y="75" x="0">
+							<mx:Label text="{data.@tratamientos_realizados}"/>
+						</mx:FormItem>
+					</mx:Canvas>
+				</mx:Component>
+				</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</columns>
+		</ReportDataGrid>
+	</Body>
+	<PrintComponent width="100%" height="18">
+		<mx:Label text="Página {pageNumber}" fontSize="12" right="0" top="0"/>
+	</PrintComponent>
+</Report>

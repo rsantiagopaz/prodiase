@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="584" height="628" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:ns2="clases.*">
+<mx:Metadata>
+	[Event(name="eventAceptar")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+	<mx:Script source="TitleWindow_NuevoPaciente_as.as"/>
+	
+	<mx:XML id="xmlModel" format="e4x">
+	<root>
+		<persona persona_tipodoc="{cboPersona_tipodoc.selectedItem.@persona_tipodoc}" persona_dni="{txtPersona_dni.text}" persona_nombre="{txtPersona_nombre.text}" persona_domicilio="{txtPersona_domicilio.text}" persona_sexo="{cboPersona_sexo.selectedItem.@persona_sexo}" persona_fecha_nacimiento="" localidad_id="{autocompleteLocalidad.selectedItem.@id}"/>
+		<paciente cuil="{txtCuil.text}" id_personal="{autocompleteMedico.selectedItem.@id}" id_tipo_paciente="{cboTipo_paciente.selectedItem.@id_tipo_paciente}" tratamientos_realizados="{txtTratamientos_realizados.text}" estado_actual="{txtEstado_actual.text}" estudios_complementarios="{txtEstudios_complementarios.text}" req_cobertura_social="{int(chkReq_cobertura_social.selected)}" req_declaracion_jurada="{int(chkReq_declaracion_jurada.selected)}" req_fotocopia_dni="{int(chkReq_fotocopia_dni.selected)}" req_certificado_residencia="{int(chkReq_certificado_residencia.selected)}" sabe_leer="{int(chkSabe_leer.selected)}" sabe_escribir="{int(chkSabe_escribir.selected)}" telefonos="{txtTelefonos.text}" peso="{nstPeso.value}" altura="{nstAltura.value}" imc="{nstImc.value}" ceguera="{int(chkCeguera.selected)}" msa_izq="{int(chkMsa_izq.selected)}" msa_der="{int(chkMsa_der.selected)}" mia_izq="{int(chkMia_izq.selected)}" mia_der="{int(chkMia_der.selected)}" observa="{escape(txtObserva.text)}" estado="{cboEstado.selectedItem.@estado}" inactivo="{cboInactivo.selectedItem.@inactivo}"/>
+	</root>
+	</mx:XML>
+	
+	<mx:HTTPService id="httpsAutoCompleteLocalidad" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoCompleteLocalidad_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	<mx:HTTPService id="httpsAutoCompleteMedico" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoCompleteMedico_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	<mx:ComboBox id="cboPersona_tipodoc" labelField="@label" change="boolObraSocial = false;" x="147" y="10" width="138">
+		<mx:dataProvider>
+			<mx:XMLList xmlns="">
+			   	<tipodoc label="D.N.I." persona_tipodoc="D"/>
+			   	<tipodoc label="Lib.Cívica" persona_tipodoc="C"/>
+			   	<tipodoc label="Lib.Enrolamiento" persona_tipodoc="E"/>
+			   	<tipodoc label="Pasaporte" persona_tipodoc="P"/>
+			   	<tipodoc label="Cédula" persona_tipodoc="F"/>
+			</mx:XMLList>
+		</mx:dataProvider>
+	</mx:ComboBox>
+	<mx:TextInput maxChars="8" x="339" y="10" id="txtPersona_dni" change="boolObraSocial = false;" width="119" text="{xmlModel.persona.@persona_dni}"/>
+	<mx:Button x="479" y="10" label="Verificar" id="btnVerificar"/>
+	<mx:Label x="10" y="84" text="CUIL:"/>
+	<mx:TextInput x="147" y="82" id="txtCuil" focusOut="txtCuil.text = mx.utils.StringUtil.trim(txtCuil.text);" text="{xmlModel.paciente.@cuil}"/>
+	<mx:TextInput x="147" y="112" id="txtPersona_nombre" text="{xmlModel.persona.@persona_nombre}" width="362"/>
+	<mx:TextInput x="147" y="140" id="txtPersona_domicilio" text="{xmlModel.persona.@persona_domicilio}" width="362"/>
+	<ns1:AutoComplete x="147" y="168" id="autocompleteLocalidad" labelField="descrip" width="362"/>
+	<ns2:DateFieldEs editable="true" x="147" y="198" width="95" id="dflPersona_fecha_nacimiento"/>
+	<mx:ComboBox x="413" y="198" width="96" id="cboPersona_sexo" labelField="@label">
+		<mx:dataProvider>
+			<mx:XMLList xmlns="">
+			   	<sexo label="Femenino" persona_sexo="F"/>
+			   	<sexo label="Masculino" persona_sexo="M"/>
+			</mx:XMLList>
+		</mx:dataProvider>
+	</mx:ComboBox>
+	<mx:Label x="10" y="230" text="Médico:"/>
+	<mx:Label x="10" y="260" text="Fecha ingreso:"/>
+	<ns1:AutoComplete x="147" y="228" id="autocompleteMedico" labelField="descrip" width="362"/>
+	<ns2:DateFieldEs editable="true" x="147" y="258" width="95" id="dflFecha_ingreso"/>
+	<mx:ComboBox x="353" y="258" width="156" id="cboTipo_paciente" labelField="@tipo_paciente"/>
+	<mx:TabNavigator creationPolicy="all" x="0" y="288" width="564" height="224">
+		<mx:Canvas label="O.Social" width="100%" height="100%">
+			<mx:DataGrid id="dtgObraSocial" bottom="0" top="0" left="0" right="0" editable="true" dataProvider="{xmlModel.obras_sociales.obra_social}">
+				<mx:columns>
+					<mx:DataGridColumn editable="false" headerText="Sigla" dataField="@siglas" width="80"/>
+					<mx:DataGridColumn editable="false" headerText="Nombre" dataField="@nombre"/>
+					<mx:DataGridColumn editable="true" headerText="Nro.afiliado" dataField="@nro_afiliado" width="120"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:Canvas>
+		<mx:Canvas label="Otros 1" width="100%" height="100%">
+			<mx:Label x="10" y="62" text="Estudios complemen.:"/>
+			<mx:Label x="10" y="32" text="Estado actual:"/>
+			<mx:Label x="10" y="2" text="Tratam.realizados:"/>
+			<mx:TextInput x="147" y="0" width="362" id="txtTratamientos_realizados" text="{xmlModel.paciente.@tratamientos_realizados}">
+			</mx:TextInput>
+			<mx:TextInput x="147" y="30" width="362" id="txtEstado_actual" text="{xmlModel.paciente.@estado_actual}">
+			</mx:TextInput>
+			<mx:TextInput x="147" y="60" width="362" id="txtEstudios_complementarios" text="{xmlModel.paciente.@estudios_complementarios}">
+			</mx:TextInput>
+			<mx:CheckBox x="10" y="88" label="Cobertura social" id="chkReq_cobertura_social" selected="{Boolean(int(xmlModel.paciente.@req_cobertura_social))}"/>
+			<mx:CheckBox x="133" y="88" label="Declaracion jurada" id="chkReq_declaracion_jurada" selected="{Boolean(int(xmlModel.paciente.@req_declaracion_jurada))}"/>
+			<mx:CheckBox x="10" y="118" label="Fotocopia DNI" id="chkReq_fotocopia_dni" selected="{Boolean(int(xmlModel.paciente.@req_fotocopia_dni))}"/>
+			<mx:CheckBox x="133" y="118" label="Certif.residencia" id="chkReq_certificado_residencia" selected="{Boolean(int(xmlModel.paciente.@req_certificado_residencia))}"/>
+			<mx:TextArea x="281" y="107" width="228" height="74" id="txtTelefonos" text="{xmlModel.paciente.@telefonos}"/>
+			<mx:Label x="281" y="90" text="Telefonos:"/>
+		</mx:Canvas>
+		<mx:Canvas label="Otros 2" width="100%" height="100%">
+			<mx:CheckBox x="10" y="0" label="Sabe leer" id="chkSabe_leer" selected="{Boolean(int(xmlModel.paciente.@sabe_leer))}"/>
+			<mx:CheckBox x="133" y="0" label="Sabe escribir" id="chkSabe_escribir" selected="{Boolean(int(xmlModel.paciente.@sabe_escribir))}"/>
+			<mx:NumericStepper x="72" y="30" value="{Number(xmlModel.paciente.@peso)}" minimum="0" maximum="1000" id="nstPeso" stepSize="0.01"/>
+			<mx:NumericStepper x="238" y="30" value="{Number(xmlModel.paciente.@altura)}" minimum="0" maximum="1000" id="nstAltura" stepSize="0.01"/>
+			<mx:NumericStepper x="379" y="30" value="{Number(xmlModel.paciente.@imc)}" minimum="0" maximum="1000" id="nstImc" stepSize="0.01"/>
+			<mx:CheckBox x="10" y="58" label="Ceguera" id="chkCeguera" selected="{Boolean(int(xmlModel.paciente.@ceguera))}"/>
+			<mx:CheckBox x="228" y="58" label="Izq." id="chkMsa_izq" selected="{Boolean(int(xmlModel.paciente.@msa_izq))}"/>
+			<mx:CheckBox x="279" y="58" label="Der." id="chkMsa_der" selected="{Boolean(int(xmlModel.paciente.@msa_der))}"/>
+			<mx:CheckBox x="449" y="58" label="Izq." id="chkMia_izq" selected="{Boolean(int(xmlModel.paciente.@mia_izq))}"/>
+			<mx:CheckBox x="500" y="58" label="Der." id="chkMia_der" selected="{Boolean(int(xmlModel.paciente.@mia_der))}"/>
+			<mx:Label x="10" y="32" text="Peso(k):"/>
+			<mx:Label x="339" y="32" text="IMC:"/>
+			<mx:Label x="167" y="32" text="Altura(m):"/>
+			<mx:Label x="133" y="60" text="M.sup.amput.:"/>
+			<mx:Label x="354" y="60" text="M.inf.amput.:"/>
+		</mx:Canvas>
+		<mx:Canvas label="Observaciones" width="100%" height="100%">
+			<mx:TextArea x="10" y="0" width="542" height="180" text="{unescape(xmlModel.paciente.@observa)}" id="txtObserva"/>
+		</mx:Canvas>
+	</mx:TabNavigator>
+	
+	<ns2:DateFieldEs editable="true" x="129" y="520" width="95" id="dflReq_fecha"/>
+	<mx:ComboBox x="354" y="520" width="96" id="cboEstado" labelField="@label">
+		<mx:dataProvider>
+			<mx:XMLList xmlns="">
+			   	<estado label="Activo" estado="A"/>
+			   	<estado label="Inactivo" estado="I"/>
+			</mx:XMLList>
+		</mx:dataProvider>
+	</mx:ComboBox>
+	<mx:ComboBox x="458" y="520" width="96" id="cboInactivo" labelField="@label" enabled="{cboEstado.selectedItem.@estado=='I'}">
+		<mx:dataProvider>
+			<mx:XMLList xmlns="">
+			   	<inactivo label="O.Social" inactivo="S"/>
+			   	<inactivo label="Defunción" inactivo="D"/>
+			   	<inactivo label="Otro" inactivo="O"/>
+			</mx:XMLList>
+		</mx:dataProvider>
+	</mx:ComboBox>
+	<mx:Label x="299" y="522" text="Estado:"/>
+	<mx:Label x="10" y="12" text="Tipo documento:"/>
+	<mx:Label x="299" y="12" text="Nro.:"/>
+	
+	<mx:Label x="10" y="114" text="Nombre:"/>
+	<mx:Label x="10" y="142" text="Domicilio:"/>
+	<mx:Label x="348" y="200" text="Sexo:"/>
+	<mx:Label x="10" y="200" text="Fecha nac.:"/>
+	<mx:Label x="10" y="170" text="Localidad:"/>
+	<mx:Label x="260" y="260" text="Tipo paciente:"/>
+	<mx:Label x="10" y="522" text="F.actual.requisitos:"/>
+	
+	<ns2:NumberValidator_ES id="valPersona_dni" source="{txtPersona_dni}" property="text"/>
+	<ns2:StringValidador_ES id="valPersona_nombre" source="{txtPersona_nombre}" property="text"/>
+	<ns2:StringValidador_ES id="valPersona_domicilio" source="{txtPersona_domicilio}" property="text"/>
+	<ns2:DateValidator_ES id="valPersona_fecha_nacimiento" source="{dflPersona_fecha_nacimiento}" property="selectedDate"/>
+	<ns2:DateValidator_ES id="valFecha_ingreso" source="{dflFecha_ingreso}" property="selectedDate"/>
+	<ns2:DateValidator_ES id="valReq_fecha" source="{dflReq_fecha}" property="selectedDate"/>
+	<mx:ControlBar>
+		<mx:Button label="Aceptar" id="btnAceptar"/>
+		<mx:Button label="Cancelar" id="btnCancelar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

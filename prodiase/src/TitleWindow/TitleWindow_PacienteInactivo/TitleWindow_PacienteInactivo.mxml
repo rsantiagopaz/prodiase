@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="986" height="608" title="Buscar pacientes sin entregas" xmlns:ns1="clases.*">
+<mx:Metadata>
+	[Event(name="eventAceptar")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			public function label_color(fecha: String, estado: String) : String {
+				var resultado: String;
+				if (estado=="A") {
+					resultado = '<FONT COLOR="#36B870">' + fecha + '</FONT>';
+				} else if (estado=="X") {
+					resultado = '<FONT COLOR="#FF0000">' + fecha + '</FONT>';
+				} else {
+					resultado = fecha;
+				}
+				return resultado;
+			}
+		]]>
+	</mx:Script>
+<mx:Script source="TitleWindow_PacienteInactivo_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x">
+	<root/>
+	</mx:XML>
+	<mx:DataGrid id="dtgTratamiento" editable="true" sortableColumns="false" top="94" left="0" bottom="0" right="0">
+		<mx:columns>
+			<mx:DataGridColumn headerText="" dataField="seleccionar" editable="true" width="30" textAlign="center" itemRenderer="mx.controls.CheckBox" rendererIsEditor="true" editorDataField="selected"/>
+			<mx:DataGridColumn headerText="Nombre" dataField="persona_nombre" editable="false"/>
+			<mx:DataGridColumn headerText="Nro.doc." dataField="persona_dni" editable="false" width="100"/>
+			<mx:DataGridColumn headerText="Ingreso" dataField="fecha_ingreso" editable="false" width="100"/>
+			<mx:DataGridColumn headerText="Ult. entrega" editable="false" width="200">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox horizontalAlign="center">
+						<mx:Label htmlText="{outerDocument.label_color(data.fecha, data.estado)}">
+						</mx:Label>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+			</mx:DataGridColumn>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Label x="0" y="4" text="Desde:"/>
+	<ns1:DateFieldEs x="50" y="2" id="dtfFecha"/>
+	<mx:Button x="194" y="2" label="Buscar..." id="btnBuscar"/>
+	<mx:Button x="0" y="64" id="btnTodos" label="Todos"/>
+	<mx:Button x="67" y="64" id="btnNinguno" label="Ninguno"/>
+	<mx:Button x="178" y="64" label="Imprimir..." id="btnImprimir"/>
+	<mx:Label x="315" y="4" text="Cantidad buscada: 0" id="lblCantidad"/>
+	<mx:Button x="827" y="64" label="Pasar a inactivo..." id="btnInactivo"/>
+	<mx:Label x="30" y="47" text="Seleccionar"/>
+	<mx:ControlBar>
+		<mx:Button label="Cerrar" id="btnCancelar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

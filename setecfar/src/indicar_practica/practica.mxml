@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="fncInit()" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:clases="clases.*">
+	<mx:Script source="practica_as.as" />
+	<mx:TitleWindow layout="vertical" verticalAlign="middle" title="Practicas">
+		<mx:Form>
+				<mx:FormItem label="Practica:">
+					<ns1:AutoComplete id="acPractica" labelField="descripcion" width="380" />
+				</mx:FormItem>
+				<mx:FormItem label="Resultado:">
+						<mx:TextArea height="80" width="379" id="txaResultado"/>
+				</mx:FormItem>
+				<mx:FormItem label="Fecha Solicitud:">
+						<clases:DateFieldEs width="127" id="dfSolicitud"/>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:ControlBar horizontalAlign="center">
+				<mx:Button label="Grabar" id="btnGrabar" icon="@Embed(source='../img/save.png')"/>
+				<mx:Button label="Cancelar" id="btnCancel"  icon="@Embed(source='../img/close.png')"/>
+			</mx:ControlBar>
+	</mx:TitleWindow>
+	<clases:StringValidador_ES id="validFecha" source="{dfSolicitud}" property="text" required="true" />
+</mx:Module>

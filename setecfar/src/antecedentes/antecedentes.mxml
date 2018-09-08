@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal"
+	xmlns:ns1="com.adobe.flex.extras.controls.*" 
+	creationComplete="fncInit()" width="100%" height="100%">
+	<mx:states>
+		<mx:State name="historial">
+			<mx:RemoveChild target="{btnNuevoAntecedente}"/>
+			<mx:RemoveChild target="{btnCerrar}"/>
+			<mx:SetProperty target="{del}" name="visible" value="false"/>
+			<mx:SetProperty target="{edit}" name="visible" value="false"/>
+			<mx:AddChild relativeTo="{controlbar1}" position="lastChild">
+				<mx:Button label="Cerrar" id="btnCerrarHistorial" icon="@Embed(source='../img/close.png')"/>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	<mx:Metadata>
+		[Event(name="eveModulosHttpsResult")]
+		[Event(name="eventClose")]
+	</mx:Metadata>
+	<mx:Script source="antecedentes_as.as" />		
+	<mx:Panel layout="vertical" title="Antecedentes" width="100%" height="100%">
+		<mx:DataGrid id="gridAntecedentes" width="890" height="300" dataProvider="{_xmlAntecedentes.antecedente}" wordWrap="true" variableRowHeight="true">
+			<mx:columns>
+				<mx:DataGridColumn visible="false" dataField="@id_antecedente_ingresos"/>
+				<mx:DataGridColumn headerText="Tipo de Antec." width="150" dataField="@descripcion"/>
+				<mx:DataGridColumn headerText="Descripción" width="150" dataField="@antecedente"/>
+				<mx:DataGridColumn headerText="Observaciones" width="200" dataField="@observaciones"/>
+				<mx:DataGridColumn headerText="Fecha" width="100" dataField="@fecha"/>
+				<mx:DataGridColumn headerText="Medico" width="150" dataField="@medico"/>
+				<mx:DataGridColumn headerText="Acción" width="80" dataField="@accion"/>
+				<mx:DataGridColumn id="edit" headerText="" width="30" visible="true"> 
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalAlign="center">	
+								<mx:Button  width="24" height="18" icon="@Embed(source='../img/edit.png')"
+									click="outerDocument.fncEditarAntecedente()" toolTip="Modificar" 
+									enabled="{Boolean(data.@accion != 'Quitó')}"
+									/>
+							</mx:HBox>						
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn id="del" headerText="" width="30" visible="true">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalAlign="center">	
+								<mx:Button  width="24" height="18" icon="@Embed(source='../img/del.png')"
+									click="outerDocument.fncEliminarAntecedente()" toolTip="Eliminar" 
+									enabled="{Boolean(data.@accion != 'Quitó')}"
+									/>
+							</mx:HBox>						
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>				
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:Button id="btnNuevoAntecedente" width="5%" fontWeight="bold" textAlign="left" fontSize="10" toolTip="Agregar" height="5%" tabIndex="5" label="Nuevo Antecedente">		  
+		  <mx:icon>@Embed(source='../img/add.png')</mx:icon>
+		</mx:Button>
+		<mx:ControlBar horizontalAlign="right" id="controlbar1">
+			<mx:Button label="Cerrar" id="btnCerrar" icon="@Embed(source='../img/close.png')"/>
+		</mx:ControlBar>
+	</mx:Panel>	
+</mx:Module>

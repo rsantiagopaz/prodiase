@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="606" height="234" title="Alta producto/depósito" xmlns:ns1="com.adobe.flex.extras.controls.*">
+<mx:Metadata>
+	[Event(name="eventAceptar")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+		]]>
+	</mx:Script>
+	<mx:Script source="TitleWindow_AltaProDep_as.as"/>
+
+	<mx:RadioButtonGroup id="radiogroup1"/>
+	<mx:RadioButton x="10" y="10" label="Producto" id="rdb0" groupName="radiogroup1" selected="true" enabled="false"/>
+	<mx:RadioButton visible="false" x="10" y="99" label="Depósito" id="rdb1" groupName="radiogroup1" enabled="false"/>
+	<mx:Label x="105" y="42" text="Tipo:"/>
+	<mx:Label x="105" y="12" text="Descripción:"/>
+	<mx:TextInput x="188" y="10" id="txtProDescrip" enabled="{rdb0.selected}" width="386"/>
+	<mx:ComboBox x="188" y="40" width="281" enabled="{rdb0.selected}" id="cboTipo" labelField="@tipo_producto"></mx:ComboBox>
+	<mx:Label visible="false" x="105" y="101" text="Descripción:"/>
+	<mx:TextInput visible="false" x="188" y="99" id="txtDepDescrip" enabled="{rdb1.selected}" width="386">
+	</mx:TextInput>
+
+	<mx:ControlBar>
+		<mx:Button label="Aceptar" id="btnAceptar"/>
+		<mx:Button label="Cancelar" id="btnCancelar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

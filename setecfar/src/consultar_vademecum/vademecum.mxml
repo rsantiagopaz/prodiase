@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="fncInit()" layout="vertical" horizontalAlign="center">
+	<mx:Metadata>
+		[Event(name="eveModulosHttpsResult")]
+		[Event(name="SelectPrincipal")]
+	</mx:Metadata>
+	<mx:Script source="vademecum_as.as" />
+	<mx:Panel title="Consultar Vademecum" horizontalAlign="center">
+		<mx:Form>
+			<mx:FormHeading label="Datos del Medicamento"/>
+			<mx:HBox>
+				<mx:FormItem label="Monodroga:">
+					<mx:TextInput width="545" id="txtDroga" />
+				</mx:FormItem>
+				<mx:Button label="Buscar" id="btnBuscar" width="93" height="18" icon="@Embed(source='../img/search.png')"/>
+			</mx:HBox>
+		</mx:Form>
+		<mx:DataGrid height="306" width="730" id="gridVademecum" dataProvider="{httpVademecum.lastResult.vademecum}" editable="false">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Monodroga" dataField="@monodroga" width="300"/>
+				<mx:DataGridColumn headerText="Presentacion" dataField="@presentacion"/>
+				<mx:DataGridColumn headerText="Concentracion" dataField="@concentracion"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:ControlBar horizontalAlign="right">
+			<mx:Button label="Cerrar" id="btnCerrar"  icon="@Embed(source='../img/close.png')" click="fncCerrar(event)"/>
+		</mx:ControlBar>
+	</mx:Panel>		
+</mx:Module>

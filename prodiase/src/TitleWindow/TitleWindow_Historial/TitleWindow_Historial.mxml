@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="640" height="452" xmlns:ns1="com.adobe.flex.extras.controls.*" title="Historial de entregas" xmlns:ns2="clases.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+<mx:Script source="TitleWindow_Historial_as.as"/>
+
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+
+	<mx:RadioButton x="10" y="10" label="a hospital/area" selected="true" id="rdb0"/>
+	<mx:RadioButton x="10" y="100" label="a depósitos" id="rdb1"/>
+	<mx:RadioButton x="10" y="130" label="a pacientes" id="rdb4"/>
+	<mx:RadioButton x="10" y="280" label="total general por producto" id="rdb5"/>
+	<mx:RadioButtonGroup id="radiogroup1"/>
+	<mx:RadioButtonGroup id="radiogroup2"/>
+	<mx:RadioButton x="27" y="40" label="en general" enabled="{rdb0.selected}" id="rdb2" groupName="radiogroup1" selected="true"/>
+	<mx:RadioButton x="27" y="70" label="en particular:" enabled="{rdb0.selected}" id="rdb3" groupName="radiogroup1"/>
+	<ns1:AutoComplete id="autocompleteHospital" enabled="{rdb0.selected &amp;&amp; rdb3.selected}" change="_varAutoComplete_change(event)" labelField="descrip" width="473" x="134" y="70"/>	
+	<mx:RadioButton x="27" y="160" label="total por producto" enabled="{rdb4.selected}" id="rdb8" groupName="radiogroup2" selected="true"/>
+	<mx:RadioButton x="27" y="190" label="en general" enabled="{rdb4.selected}" id="rdb6" groupName="radiogroup2"/>
+	<mx:CheckBox id="chk10" x="134" y="190" label="Calcular pacientes diarios" enabled="{rdb4.selected &amp;&amp; rdb6.selected}"/>
+	<mx:RadioButton x="27" y="220" label="en particular:" enabled="{rdb4.selected}" id="rdb7" groupName="radiogroup2"/>
+	<ns1:AutoComplete id="autocompletePaciente" labelField="descrip" x="134" y="220" change="_varAutoComplete_change(event)" width="473" enabled="{rdb4.selected &amp;&amp; rdb7.selected}"/>
+	<mx:CheckBox id="chk9" x="27" y="250" label="Obra social:" enabled="{rdb4.selected}"/>
+	<ns1:AutoComplete id="autocompleteObraSocial" change="_varAutoComplete_change(event)" labelField="descrip" width="470" x="134" y="250" enabled="{rdb4.selected &amp;&amp; chk9.selected}"/>
+	<mx:Label x="10" y="335" text="Desde:"/>
+	<ns2:DateFieldEs id="dflDesde" x="63" y="333"/>
+	<mx:Label x="193" y="335" text="Hasta:"/>
+	<ns2:DateFieldEs id="dflHasta" x="243" y="333"/>
+	<mx:ControlBar>
+		<mx:Button label="Ver" id="btnVer"/>
+		<mx:Button label="Cerrar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

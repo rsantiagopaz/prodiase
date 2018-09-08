@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow close="PopUpManager.removePopUp(this);" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="732" height="456" xmlns:ns1="org.print.*" showCloseButton="true" title="Impresión">
+<mx:Script>
+	<![CDATA[
+	import mx.managers.PopUpManager;
+	]]>
+</mx:Script>
+	<ns1:Preview top="0" left="0" bottom="0" right="0" id="preview">
+	</ns1:Preview>
+</mx:TitleWindow>

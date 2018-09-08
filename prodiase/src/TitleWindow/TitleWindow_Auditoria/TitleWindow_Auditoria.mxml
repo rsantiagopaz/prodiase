@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="726" height="456" xmlns:ns1="com.adobe.flex.extras.controls.*" title="Auditoria" xmlns:ns2="clases.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+<mx:Script source="TitleWindow_Auditoria_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x">
+		<root>
+			<rbtEntregas seleccionado="{rbtEntregas.selected}" />
+			<rbtIngresos seleccionado="{rbtIngresos.selected}" />
+			<rbtPacientes seleccionado="{rbtPacientes.selected}" />
+			<rbtTodos seleccionado="{rbtTodos.selected}" />
+			<usuario seleccionado="{chkUsuario.selected}" usuario="{txtUsuario.text}" />
+			<producto seleccionado="{chkProducto.selected}" id_producto="{autocompleteProducto.selectedItem.@id}" texto="{autocompleteProducto.selectedItem.descrip}" />
+			<paciente seleccionado="{chkPaciente.selected}" id_paciente="{autocompletePaciente.selectedItem.@id}" texto="{autocompletePaciente.selectedItem.descrip}" />
+			<deposito seleccionado="{chkDeposito.selected}" id_deposito="{cboDeposito.selectedItem.@id_deposito}" texto="{cboDeposito.selectedItem.@denominacion}" />
+			<fecha seleccionado="{chkFecha.selected}" />
+		</root>
+	</mx:XML>
+	
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	
+	<mx:RadioButton x="10" y="10" selected="true" click="viewstack1.selectedChild = canvas1;" id="rbtEntregas" label="Entregas"/>
+	<mx:RadioButton x="91" y="10" selected="false" click="viewstack1.selectedChild = canvas1;" id="rbtIngresos" label="Ingresos"/>
+	<mx:RadioButton x="173" y="10" selected="false" click="viewstack1.selectedChild = canvas1;" id="rbtPacientes" label="Pacientes"/>
+	<mx:RadioButton x="259" y="10" selected="false" click="viewstack1.selectedChild = canvas1;" id="rbtTodos" label="Todos"/>
+	<mx:ViewStack creationPolicy="all" x="10" y="55" id="viewstack1" width="686" height="303">
+		<mx:Canvas id="canvas1" label="View 1" width="100%" height="100%">
+			<mx:Accordion x="0" y="0" width="100%" height="100%">
+				<mx:Canvas label="Parámetros" width="100%" height="100%">
+					<mx:CheckBox x="10" y="10" label="Usuario:" id="chkUsuario"/>
+					<mx:TextInput x="120" y="10" id="txtUsuario" enabled="{chkUsuario.selected}"/>
+					<mx:CheckBox id="chkProducto" x="10" y="40" label="Producto:"/>
+					<ns1:AutoComplete id="autocompleteProducto" change="varAutoComplete_change(event)" labelField="descrip" width="329" x="120" y="40" enabled="{chkProducto.selected}"/>
+					<mx:CheckBox id="chkPaciente" x="10" y="70" label="Paciente:"/>
+					<ns1:AutoComplete id="autocompletePaciente" change="varAutoComplete_change(event)" labelField="descrip" width="329" x="120" y="70" enabled="{chkPaciente.selected}"/>
+					<mx:CheckBox x="10" y="100" label="Depósito:" id="chkDeposito"/>
+					<mx:ComboBox x="120" y="100" id="cboDeposito" labelField="@denominacion" dataProvider="{xmlDepositos.deposito}" enabled="{chkDeposito.selected}"></mx:ComboBox>
+					<mx:CheckBox x="10" y="130" label="Fecha" id="chkFecha"/>
+					<ns2:DateFieldEs editable="true" x="173" y="130" id="dtfDesde" enabled="{chkFecha.selected}" width="100"/>
+					<ns2:DateFieldEs editable="true" x="349" y="130" id="dtfHasta" enabled="{chkFecha.selected}" width="100"/>
+					<mx:Label x="120" y="132" text="desde:"/>
+					<mx:Label x="299" y="132" text="hasta:"/>
+				</mx:Canvas>
+			</mx:Accordion>
+		</mx:Canvas>
+	</mx:ViewStack>
+
+
+	<mx:ControlBar>
+		<mx:Button label="Ver" id="btnImprimir"/>
+		<mx:Button label="Cerrar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>	
+</mx:TitleWindow>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="584" height="522" title="Alta de paciente" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:ns2="clases.*">
+<mx:Metadata>
+	[Event(name="eventAceptar")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+		]]>
+	</mx:Script>
+	<mx:Script source="TitleWindow_NuevoPaciente_as.as"/>
+	
+	<mx:XML id="xmlModel" format="e4x">
+	<root>
+		<persona persona_tipodoc="{cboPersona_tipodoc.selectedItem.persona_tipodoc}" persona_dni="{txtPersona_dni.text}" persona_nombre="{txtPersona_nombre.text}" persona_domicilio="{txtPersona_domicilio.text}" persona_sexo="{cboPersona_sexo.selectedItem.@persona_sexo}" persona_fecha_nacimiento="" localidad_id="{autocompleteLocalidad.selectedItem.@id}"/>
+		<paciente id_persona_profesion="{autocompleteMedico.selectedItem.@id}" id_tipo_paciente="{cboTipo_paciente.selectedItem.@id_tipo_paciente}" tratamientos_realizados="{txtTratamientos_realizados.text}" estado_actual="{txtEstado_actual.text}" estudios_complementarios="{txtEstudios_complementarios.text}" req_cobertura_social="{int(chkReq_cobertura_social.selected)}" req_declaracion_jurada="{int(chkReq_declaracion_jurada.selected)}" req_fotocopia_dni="{int(chkReq_fotocopia_dni.selected)}" req_certificado_residencia="{int(chkReq_certificado_residencia.selected)}" estado="{cboEstado.selectedItem.@estado}"/>
+	</root>
+	</mx:XML>
+	
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	<mx:ComboBox id="cboPersona_tipodoc" x="147" y="10" width="138">
+		<mx:ArrayCollection>
+     	<mx:Object label="D.N.I." persona_tipodoc="D"/>
+     	<mx:Object label="Lib.Cívica" persona_tipodoc="C"/>
+     	<mx:Object label="Lib.Enrolamiento" persona_tipodoc="E"/>
+     	<mx:Object label="Pasaporte" persona_tipodoc="P"/>
+ 		</mx:ArrayCollection>
+	</mx:ComboBox>
+	<mx:TextInput maxChars="8" x="339" y="10" id="txtPersona_dni" width="119"/>
+	<mx:Button x="479" y="10" label="Verificar" id="btnBuscar"/>
+	<mx:TextInput x="147" y="66" id="txtPersona_nombre" text="{xmlModel.persona.@persona_nombre}" width="362"/>
+	<mx:TextInput x="147" y="94" id="txtPersona_domicilio" text="{xmlModel.persona.@persona_domicilio}" width="362"/>
+	<ns1:AutoComplete x="147" y="122" id="autocompleteLocalidad" labelField="descrip" width="362"/>
+	<ns2:DateFieldEs editable="true" x="147" y="152" width="95" id="dflPersona_fecha_nacimiento"/>
+	<mx:ComboBox x="413" y="152" width="96" id="cboPersona_sexo" labelField="@label">
+		<mx:dataProvider>
+			<mx:XMLList xmlns="">
+			   	<sexo label="Femenino" persona_sexo="F"/>
+			   	<sexo label="Masculino" persona_sexo="M"/>
+			</mx:XMLList>
+		</mx:dataProvider>
+	</mx:ComboBox>
+	<mx:Label x="10" y="223" text="Médico:"/>
+	<mx:Label x="10" y="343" text="Estudios complemen.:"/>
+	<mx:Label x="10" y="313" text="Estado actual:"/>
+	<mx:Label x="10" y="283" text="Tratam.realizados:"/>
+	<mx:Label x="10" y="253" text="Fecha ingreso:"/>
+	<ns1:AutoComplete x="147" y="221" id="autocompleteMedico" labelField="descrip" width="362"/>
+	<ns2:DateFieldEs editable="true" x="147" y="251" width="95" id="dflFecha_ingreso"/>
+	<mx:ComboBox x="353" y="251" width="156" id="cboTipo_paciente" labelField="@tipo_paciente"/>
+	<mx:TextInput x="147" y="281" width="362" id="txtTratamientos_realizados" text="{xmlModel.paciente.@tratamientos_realizados}">
+	</mx:TextInput>
+	<mx:TextInput x="147" y="311" width="362" id="txtEstado_actual" text="{xmlModel.paciente.@estado_actual}">
+	</mx:TextInput>
+	<mx:TextInput x="147" y="341" width="362" id="txtEstudios_complementarios" text="{xmlModel.paciente.@estudios_complementarios}">
+	</mx:TextInput>
+	<mx:CheckBox x="10" y="371" label="Cobertura social" id="chkReq_cobertura_social" selected="{Boolean(int(xmlModel.paciente.@req_cobertura_social))}"/>
+	<mx:CheckBox x="133" y="371" label="Declaracion jurada" id="chkReq_declaracion_jurada" selected="{Boolean(int(xmlModel.paciente.@req_declaracion_jurada))}"/>
+	<mx:CheckBox x="268" y="371" label="Fotocopia DNI" id="chkReq_fotocopia_dni" selected="{Boolean(int(xmlModel.paciente.@req_fotocopia_dni))}"/>
+	<mx:CheckBox x="378" y="371" label="Certif.residencia" id="chkReq_certificado_residencia" selected="{Boolean(int(xmlModel.paciente.@req_certificado_residencia))}"/>
+	<ns2:DateFieldEs editable="true" x="147" y="401" width="95" id="dflReq_fecha"/>
+	<mx:ComboBox x="413" y="401" width="96" id="cboEstado" labelField="@label">
+		<mx:dataProvider>
+			<mx:XMLList xmlns="">
+			   	<estado label="Activo" estado="A"/>
+			   	<estado label="Inactivo" estado="I"/>
+			</mx:XMLList>
+		</mx:dataProvider>
+	</mx:ComboBox>
+	<mx:Label x="348" y="403" text="Estado:"/>
+	<mx:Label x="10" y="12" text="Tipo documento:"/>
+	<mx:Label x="299" y="12" text="Nro.:"/>
+	
+	<mx:Label x="10" y="68" text="Nombre:"/>
+	<mx:Label x="10" y="96" text="Domicilio:"/>
+	<mx:Label x="348" y="154" text="Sexo:"/>
+	<mx:Label x="10" y="154" text="Fecha nac.:"/>
+	<mx:Label x="10" y="124" text="Localidad:"/>
+	<mx:Label x="260" y="253" text="Tipo paciente:"/>
+	<mx:Label x="10" y="403" text="F.actual.requisitos:"/>
+	<mx:ControlBar>
+		<mx:Button label="Aceptar" id="btnAceptar"/>
+		<mx:Button label="Cancelar" id="btnCancelar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+	
+	<ns2:NumberValidator_ES id="valPersona_dni" source="{txtPersona_dni}" property="text"/>
+	<ns2:StringValidador_ES id="valPersona_nombre" source="{txtPersona_nombre}" property="text"/>
+	<ns2:StringValidador_ES id="valPersona_domicilio" source="{txtPersona_domicilio}" property="text"/>
+	<ns2:DateValidator_ES id="valPersona_fecha_nacimiento" source="{dflPersona_fecha_nacimiento}" property="selectedDate"/>
+	<ns2:DateValidator_ES id="valFecha_ingreso" source="{dflFecha_ingreso}" property="selectedDate"/>
+	<ns2:DateValidator_ES id="valReq_fecha" source="{dflReq_fecha}" property="selectedDate"/>
+
+</mx:TitleWindow>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="726" height="504" xmlns:ns1="com.adobe.flex.extras.controls.*" title="Consultas combinadas" xmlns:ns2="clases.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+		]]>
+	</mx:Script>
+<mx:Script source="TitleWindow_Consulta_Combinada_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x">
+		<root>
+			<rbt0 seleccionado="{rbtConsulta_pacientes.selected}" observa="{txtObs0.text}">
+				<medico seleccionado="{chk0.selected}"/>
+				<producto seleccionado="{chk1.selected}"/>
+				<tipo_paciente seleccionado="{chk2.selected}" id_tipo_paciente="{cboTipo_paciente.selectedItem.@id_tipo_paciente}"/>
+				<fecha_ingreso seleccionado="{chk3.selected}"/>
+				<departamento seleccionado="{chk4.selected}" departamento_id="{autocompleteDepartamento.selectedItem.@id}"/>
+				<sabe_leer seleccionado="{chk5.selected}" value="{cboSabe_leer.selectedItem.@value}"/>
+				<sabe_escribir seleccionado="{chk6.selected}" value="{cboSabe_escribir.selectedItem.@value}"/>
+				<edad seleccionado="{chk7.selected}" desde="{nstDesde.value}" hasta="{nstHasta.value}"/>
+				<sexo seleccionado="{chk8.selected}" persona_sexo="{cboPersona_sexo.selectedItem.@persona_sexo}"/>
+				<obra_social seleccionado="{chk9.selected}"/>
+				<estado seleccionado="{chk10.selected}" value="{cboEstado.selectedItem.@value}"/>
+			</rbt0>
+		</root>
+	</mx:XML>
+	
+	<mx:HTTPService id="httpsAutoComplete" url="AutoComplete.php" method="POST" resultFormat="e4x" result="httpsAutoComplete_result()" fault="Alert.show('error HTTPService');" showBusyCursor="true" />
+	
+	<mx:RadioButton x="10" y="10" label="Consulta pacientes" selected="true" click="viewstack1.selectedChild = canvas1;" id="rbtConsulta_pacientes"/>
+	<mx:ViewStack creationPolicy="all" x="10" y="55" id="viewstack1" width="686" height="334">
+		<mx:Canvas id="canvas1" label="View 1" width="100%" height="100%">
+			<mx:Accordion x="0" y="0" width="100%" height="100%">
+				<mx:Canvas label="Observaciones" width="100%" height="100%">
+					<mx:TextArea x="10" y="10" width="664" height="177" id="txtObs0"/>
+				</mx:Canvas>
+				<mx:Canvas label="Médico" width="100%" height="100%">
+					<mx:CheckBox id="chk0" x="10" y="10" label="Médico"/>
+					<ns1:AutoComplete id="autocompleteMedico" change="varAutoComplete_change(event)" labelField="descrip" width="393" x="81" y="10" enabled="{chk0.selected}"/>
+					<mx:Button x="482" y="10" label="Agregar" enabled="{chk0.selected}">
+					<mx:click>
+						<![CDATA[
+							varAutoComplete = autocompleteMedico;
+							if (typeof varAutoComplete.selectedItem == "xml") {
+								var x : XML = varAutoComplete.selectedItem as XML;
+								xmlModel.rbt0.medico.appendChild(x);
+								lst0.selectedIndex = lst0.rowCount - 1;
+								varAutoComplete.dataProvider = null;
+								varAutoComplete.setFocus();
+							}
+						]]>
+					</mx:click>
+					</mx:Button>
+					<mx:List id="lst0" x="81" y="40" dataProvider="{xmlModel.rbt0.medico.row.descrip}" height="127" width="393" enabled="{chk0.selected}"></mx:List>
+					<mx:Button x="482" y="145" label="Borrar" width="73" enabled="{chk0.selected}">
+					<mx:click>
+						<![CDATA[
+							delete xmlModel.rbt0.medico.row[lst0.selectedIndex];
+							lst0.selectedIndex = 0;
+						]]>
+					</mx:click>
+					</mx:Button>
+				</mx:Canvas>
+				<mx:Canvas label="Tratamiento" width="100%" height="100%">
+					<mx:CheckBox x="10" y="10" label="Producto" id="chk1"/>
+					<ns1:AutoComplete id="autocompleteProducto" change="varAutoComplete_change(event)" labelField="descrip" width="393" x="81" y="10" enabled="{chk1.selected}"/>
+					<mx:Button x="482" y="10" label="Agregar" enabled="{chk1.selected}">
+					<mx:click>
+						<![CDATA[
+							varAutoComplete = autocompleteProducto;
+							if (typeof varAutoComplete.selectedItem == "xml") {
+								var x : XML = varAutoComplete.selectedItem as XML;
+								xmlModel.rbt0.producto.appendChild(x);
+								lst1.selectedIndex = lst1.rowCount - 1;
+								varAutoComplete.dataProvider = null;
+								varAutoComplete.setFocus();
+							}
+						]]>
+					</mx:click>
+					</mx:Button>
+					<mx:List id="lst1" x="81" y="40" dataProvider="{xmlModel.rbt0.producto.row.descrip}" height="127" width="393" enabled="{chk1.selected}"></mx:List>
+					<mx:Button x="482" y="145" label="Borrar" width="73" enabled="{chk1.selected}">
+					<mx:click>
+						<![CDATA[
+							delete xmlModel.rbt0.producto.row[lst0.selectedIndex];
+							lst0.selectedIndex = 0;
+						]]>
+					</mx:click>
+					</mx:Button>
+
+				</mx:Canvas>
+				<mx:Canvas label="Otros" width="100%" height="100%">
+					<mx:CheckBox x="10" y="10" label="Tipo paciente:" id="chk2"/>
+					<mx:ComboBox x="120" y="10" width="186" id="cboTipo_paciente" labelField="@tipo_paciente" enabled="{chk2.selected}"/>
+					<mx:CheckBox x="10" y="40" label="Fecha ingreso" id="chk3"/>
+					<ns2:DateFieldEs editable="true" x="173" y="40" id="dtfDesde" enabled="{chk3.selected}" width="100"/>
+					<ns2:DateFieldEs editable="true" x="349" y="40" id="dtfHasta" enabled="{chk3.selected}" width="100"/>
+					<mx:Label x="120" y="42" text="Desde:"/>
+					<mx:Label x="299" y="42" text="Hasta:"/>
+					<mx:CheckBox id="chk4" x="10" y="68" label="Departamento:"/>
+					<ns1:AutoComplete id="autocompleteDepartamento" change="varAutoComplete_change(event)" labelField="descrip" width="470" x="120" y="68" enabled="{chk4.selected}"/>
+					<mx:CheckBox id="chk5" x="10" y="98" label="Sabe leer:"/>
+					<mx:ComboBox x="120" y="98" width="56" id="cboSabe_leer" labelField="@label" enabled="{chk5.selected}">
+						<mx:dataProvider>
+							<mx:XMLList xmlns="">
+							   	<sexo label="Si" value="1"/>
+							   	<sexo label="No" value="0"/>
+							</mx:XMLList>
+						</mx:dataProvider>
+					</mx:ComboBox>
+					<mx:CheckBox id="chk6" x="258" y="98" label="Sabe escribir:"/>
+					<mx:ComboBox x="378" y="98" width="56" id="cboSabe_escribir" labelField="@label" enabled="{chk6.selected}">
+						<mx:dataProvider>
+							<mx:XMLList xmlns="">
+							   	<sexo label="Si" value="1"/>
+							   	<sexo label="No" value="0"/>
+							</mx:XMLList>
+						</mx:dataProvider>
+					</mx:ComboBox>
+					<mx:CheckBox x="10" y="128" label="Edad" id="chk7"/>
+					<mx:Label x="120" y="130" text="Desde:"/>
+					<mx:Label x="299" y="130" text="Hasta:"/>
+					<mx:NumericStepper x="173" y="128" id="nstDesde" minimum="1" maximum="100" enabled="{chk7.selected}"/>
+					<mx:NumericStepper x="349" y="128" id="nstHasta" minimum="1" maximum="100" enabled="{chk7.selected}"/>
+					<mx:CheckBox x="10" y="156" label="Sexo:" id="chk8"/>
+					<mx:ComboBox x="120" y="156" width="96" id="cboPersona_sexo" labelField="@label" enabled="{chk8.selected}">
+						<mx:dataProvider>
+							<mx:XMLList xmlns="">
+							   	<sexo label="Femenino" persona_sexo="F"/>
+							   	<sexo label="Masculino" persona_sexo="M"/>
+							</mx:XMLList>
+						</mx:dataProvider>
+					</mx:ComboBox>
+					<mx:CheckBox id="chk9" x="10" y="186" label="Obra social:"/>
+					<ns1:AutoComplete id="autocompleteObraSocial" change="varAutoComplete_change(event)" labelField="descrip" width="470" x="120" y="186" enabled="{chk9.selected}"/>
+					<mx:CheckBox id="chk10" x="10" y="216" label="Estado:"/>
+					<mx:ComboBox x="120" y="216" width="96" id="cboEstado" labelField="@label" enabled="{chk10.selected}">
+						<mx:dataProvider>
+							<mx:XMLList xmlns="">
+							   	<estado label="Activo" value="A"/>
+							   	<estado label="Inactivo" value="I"/>
+							</mx:XMLList>
+						</mx:dataProvider>
+					</mx:ComboBox>
+				</mx:Canvas>
+			</mx:Accordion>
+		</mx:Canvas>
+	</mx:ViewStack>
+
+
+	<mx:ControlBar>
+		<mx:Button label="Ver" id="btnImprimir"/>
+		<mx:Button label="Cerrar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>	
+</mx:TitleWindow>

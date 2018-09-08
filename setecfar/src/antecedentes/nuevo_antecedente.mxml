@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="fncInit()" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:clases="clases.*">
+	<mx:Script source="nuevo_antecedente_as.as" />
+	<mx:TitleWindow layout="vertical" verticalAlign="middle" title="Antecedentes">
+		<mx:Form>
+				<mx:FormItem label="Tipo de Antec.:" width="485">
+						<mx:ComboBox width="380" id="cmbTipoAntec">
+							<mx:change>
+								<![CDATA[
+					  	    	cmbAntecedente.enabled = false;
+					  	    	id_tipo_antec = httpsArmarXmlTipoAntec.lastResult.tiposantecedentes.tipoantecedente[cmbTipoAntec.selectedIndex].id_tipo_antec;
+					  			httpsArmarXmlAntec.send();
+					  		]]>
+					  		</mx:change>
+						</mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem label="Antecedente:" width="485">
+						<mx:ComboBox width="380" id="cmbAntecedente"></mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem label="Observaciones:">
+					<mx:TextArea id="txaObservaciones" width="380" height="135"/>
+				</mx:FormItem>				
+			</mx:Form>
+			<mx:ControlBar horizontalAlign="center">
+				<mx:Button label="Grabar" id="btnGrabar" icon="@Embed(source='../img/save.png')"/>
+				<mx:Button label="Cancelar" id="btnCancel"  icon="@Embed(source='../img/close.png')"/>
+			</mx:ControlBar>
+	</mx:TitleWindow>
+	<clases:StringValidador_ES id="validObservaciones" source="{txaObservaciones}" property="text" required="true" />
+	
+	<!-- Armar xmlDepartamentos  -->
+	<mx:HTTPService id             = "httpsArmarXmlTipoAntec" 
+					url            = "antecedentes/nuevo_antecedente.php?rutina=armarXmlTipoAntec" 
+					method         = "GET" 
+					fault          = "fncHttpsArmarXmlTipoAntecFault(event.fault.toString())" 
+					result         = "fncHttpsArmarXmlTipoAntecResult(event)"
+					useProxy       = "false"
+					resultFormat   = "e4x"
+					showBusyCursor = "true"
+					>			
+	</mx:HTTPService>
+	
+	<!-- Armar xmlLocalidades 2  -->
+	<mx:HTTPService id             = "httpsArmarXmlAntec" 
+					url            = "antecedentes/nuevo_antecedente.php?rutina=armarXmlAntec" 
+					method         = "GET" 
+					fault          = "fncHttpsArmarXmlAntecFault(event.fault.toString())" 
+					result         = "fncHttpsArmarXmlAntecResult(event)"
+					useProxy       = "false"
+					resultFormat   = "e4x"
+					showBusyCursor = "true"
+					>
+		<mx:request xmlns="">
+			    <id_tipo_antec>
+			        {id_tipo_antec}
+			    </id_tipo_antec>
+		</mx:request>
+	</mx:HTTPService>
+</mx:Module>

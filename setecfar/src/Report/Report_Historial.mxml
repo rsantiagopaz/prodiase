@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report creationPolicy="all" xmlns="org.print.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="595" height="842">
+	<mx:XML id="xmlModel" format="e4x"/>
+	<PrintComponent width="495" height="50">
+		<mx:Label textAlign="center" x="0" y="0" text="{xmlModel.@titulo}" width="495"/>
+		<mx:Label x="163" y="32" text="{xmlModel.@intervalo}"/>
+	</PrintComponent>
+	<Body creationPolicy="all" id="body" width="100%" height="100%">
+		<ReportDataGrid borderStyle="none" showHeaders="false" variableRowHeight="true" id="rdg" width="100%" sizeToPage="true" dataProvider="{xmlModel.row}">
+			<columns>
+				<mx:DataGridColumn>
+				<mx:itemRenderer>
+				<mx:Component>
+					<mx:Canvas>
+						<mx:FormItem label="Fecha:" y="15" x="0">
+							<mx:Label text="{data.@fecha}"/>
+						</mx:FormItem>
+						<mx:FormItem label="Destino:" y="15" x="150">
+							<mx:Label text="{data.@destino}"/>
+						</mx:FormItem>
+						<ReportDataGrid borderStyle="none" showHeaders="false" id="rdg" y="30" width="100%" sizeToPage="true" dataProvider="{data.row}">
+							<columns>
+								<mx:DataGridColumn headerText="Producto" dataField="@descripcion" width="300"/>
+								<mx:DataGridColumn headerText="Tipo" dataField="@tipo_producto"/>
+								<mx:DataGridColumn headerText="Cantidad" dataField="@cantidad" textAlign="right"/>
+							</columns>
+						</ReportDataGrid>
+					</mx:Canvas>
+				</mx:Component>
+				</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</columns>
+		</ReportDataGrid>
+	</Body>
+	<PrintComponent width="100%" height="18">
+		<mx:Label text="Página {pageNumber}" fontSize="12" right="0" top="0"/>
+	</PrintComponent>
+</Report>

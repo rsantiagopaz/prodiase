@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionScriptProperties mainApplicationPath="setecfar.mxml" version="3">
+<compiler additionalCompilerArguments="-locale en_US" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderLocation="C:/xampp/htdocs/flex/setecfar-debug" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
+<compilerSourcePath/>
+<libraryPath defaultLinkType="1">
+<libraryPathEntry kind="4" path=""/>
+<libraryPathEntry kind="3" linkType="1" path="/FlexReport/bin/FlexReport.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="1" linkType="1" path="libs"/>
+</libraryPath>
+<sourceAttachmentPath/>
+</compiler>
+<applications>
+<application path="setecfar.mxml"/>
+</applications>
+<modules>
+<module application="src/setecfar.mxml" destPath="Module/Module_Principal/Module_Principal.swf" optimize="true" sourcePath="src/Module/Module_Principal/Module_Principal.mxml"/>
+<module application="src/setecfar.mxml" destPath="Module/Module_Ingresos/Module_Ingresos.swf" optimize="true" sourcePath="src/Module/Module_Ingresos/Module_Ingresos.mxml"/>
+</modules>
+<buildCSSFiles/>
+</actionScriptProperties>

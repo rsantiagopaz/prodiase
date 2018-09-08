@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow creationComplete="TitleWindow_creationComplete()" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="986" height="506" title="Nueva entrega">
+<mx:Metadata>
+	[Event(name="eventAceptar")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+		]]>
+	</mx:Script>
+<mx:Script source="TitleWindow_Entrega_as.as"/>
+
+	<mx:XML id="xmlModel" format="e4x">
+	<root/>
+	</mx:XML>
+	
+	<mx:ComboBox x="67" y="2" id="cboDeposito" labelField="@denominacion" dataProvider="{xmlDepositos.deposito}"></mx:ComboBox>
+	<mx:ComboBox x="371" y="2" id="cboObraSocial" labelField="@descrip" dataProvider="{xmlObrasSociales.obra_social}"></mx:ComboBox>
+	<mx:Label x="308" y="4" text="O.Social:"/>
+	<mx:DataGrid id="dtgTratamiento" dataProvider="{xmlModel.tratamientos.tratamiento}" editable="true" doubleClickEnabled="true" top="32" left="0" bottom="0" right="0">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Producto" dataField="@descripcion" editable="false" width="400"/>
+			<mx:DataGridColumn headerText="Tipo" dataField="@tipo_producto" editable="false"/>
+			<mx:DataGridColumn headerText="Dosis diaria" dataField="@dosis_diaria" textAlign="right" width="80" editable="false"/>
+			<mx:DataGridColumn headerText="Disp.real" dataField="@disponible_real" textAlign="right" width="80" editable="false"/>
+			<mx:DataGridColumn headerText="Disp.virtual" dataField="@disponible_virtual" textAlign="right" width="80" editable="false"/>
+			<mx:DataGridColumn headerText="Cantidad" dataField="@cantidad" textAlign="right" width="60" editable="true"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Label x="0" y="4" text="Depósito:"/>
+	<mx:ControlBar>
+		<mx:Button label="Aceptar" id="btnAceptar"/>
+		<mx:Button label="Cancelar" id="btnCancelar" click="PopUpManager.removePopUp(this);"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

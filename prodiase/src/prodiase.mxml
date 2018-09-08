@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Aplicación Principal del Sistema 
+ Fecha de creación: 7/2/2009
+ Fecha de última modificación: 11/3/2009
+ Autor: Jorge Fabián Mitre  (jorgemitre@hotmail.com)
+ Descripción: Modelo de referencia para crear una aplicación FX con un menú vinculado a un
+ viewstack y en cada vista la incorporación del módulo correspondiente, con la posibilidad
+ de capturar el evento "eveModulosHttpsResult" el cual es disparado desde el manejador
+ del evento "result" del objeto clase HTTPService, cuyo objeto es evaluar el control de acceso,
+ como se puede apreciar en la función fncEveModulosHttpsResult 
+ "SI TE SIRVE ESTE CODIGO, POR FAVOR, NO QUITES ESTAS LINEAS"
+-->
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+				layout="absolute" applicationComplete="fncInicio()" 
+				 width="100%" height="100%"
+				 xmlns:ns1="cola_internacion.*" xmlns:ns2="consulta.*"
+				 xmlns:ns3="consultar_vademecum.*" xmlns:ns4="consultar_diagnosticos.*" 
+				 xmlns:ns5="consultar_practicas.*"  xmlns:ns6="historial.*"
+				 xmlns:ns7="admision.*" xmlns:ns8="egreso.*"
+				 xmlns:ns9="pase_servicio.*"  xmlns:ns10="Module.Module_Principal.*" xmlns:ns11="Module.Module_Entregas.*">
+
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.XMLListCollection;
+			import TitleWindow.TitleWindow_PacienteInactivo.TitleWindow_PacienteInactivo;
+			import TitleWindow.TitleWindow_Auditoria.TitleWindow_Auditoria;
+			import TitleWindow.TitleWindow_Consulta_Combinada.TitleWindow_Consulta_Combinada;
+			import TitleWindow.TitleWindow_AltaProDep.TitleWindow_AltaProDep;
+			import mx.rpc.http.mxml.HTTPService;
+			import TitleWindow.TitleWindow_Entrega.TitleWindow_Entrega;
+			import mx.rpc.events.ResultEvent;
+			import TitleWindow.TitleWindow_Historial.TitleWindow_Historial;
+			import TitleWindow.TitleWindow_PacientesX.TitleWindow_PacientesX;
+			import Report.Report_Pacientes;
+			import mx.containers.TitleWindow;
+			import TitleWindow.TitleWindow_NuevoPaciente.TitleWindow_NuevoPaciente;
+			import TitleWindow.TitleWindow_AgregaTratamiento.TitleWindow_AgregaTratamiento;
+			import TitleWindow.TitleWindow_Impresion.TitleWindow_Impresion;
+			import Report.Report_Stock;
+			import org.doc.Document;
+			import clases.HTTPServices;
+			import mx.charts.BubbleChart;
+			//import historial.buscar;
+			//import buscar_persona.busquedapersona;
+			import mx.events.MenuEvent;
+			import flash.events.Event;
+			import flash.display.*;
+			import flash.net.URLRequest;
+			import mx.events.CloseEvent;
+			import paquete01.ControlAcceso;
+			import paquete01.ControlAccesoPopUp
+			import paquete01.ControlAccesoCambiarPasswordPopUp;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			// *********************************************************************************
+			// *********************************************************************************
+			// C O N T R O L  D E  A C C E S O >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+			// ---------------------------------------------------------------------------------
+			// Se define el objeto de la clase ControlAcceso que manejará el control de acceso:
+		    [Bindable] public var controlAcceso : ControlAcceso;
+		    // Se define la variable booleana que determina si el usuario está autorizado a operar el sistema:  
+		    [Bindable] public var controlAccesoAutorizado : Boolean = false;
+		    
+		    [Bindable] public var xmlServiciosUser : XML;
+		    
+		    private var xmlDepositos : XML;
+		    private var id_deposito : String = "0";
+		    
+		    [Bindable] private var idPersona : String;
+		    [Bindable] public var DesdeConsulta : Boolean = false;
+		    //private var buscarHistorial : buscar;
+		    
+			private function fncSelectPrincipal():void{
+				viewModulos.selectedChild = canvasPrincipal;
+				//this.COLA.fncActColas();
+				//this.COLA.fncIniciarTimer();				
+			}	
+			// Función que es convocada cuando se presiona el botón "Login" del formulario de logueo:
+			//               __________
+			
+            private function fncTraerServicios() : void
+            //               __________
+             { 
+             	btnLogin.label = "Trayendo servicios...";
+             	btnLogin.enabled = false;
+             	cmbServicio.enabled = false;
+             	cmbArea.enabled = false;
+             	controlAcceso.TraerServicios(textInputUsuario.text);
+             }
+			public function fncEveServiciosTraidos(e:Event):void
+			{
+				btnLogin.label = "Login";
+             	xmlServiciosUser=controlAcceso.xmlServicios;
+             	if (xmlServiciosUser.hasOwnProperty('areaservicio')){
+             		cmbServicio.enabled = true;
+             		cmbArea.enabled = true;
+             		btnLogin.enabled = true;
+             	}
+			}
+			// Función que es convocada cuando se presiona el botón "Login" del formulario de logueo:
+			//               __________
+			
+            private function fncLogin() : void
+            //               __________
+             { 
+             	var id_OAS_usuario : String = cmbServicio.selectedItem.@id_oas_usuario;
+             	btnLogin.label = "Validando...";
+             	btnLogin.enabled = false;
+             	controlAcceso.login(textInputUsuario.text, textInputPassword.text, id_OAS_usuario, '035');
+             }  
+             
+            // Función que es convocada ante el "disparo" del evento "eveLogueoRealizado" de la clase ControlAcceso:
+			//               ______________________________
+			
+			private function fncEveLogueoRealizado(e:Event):void
+			//               ______________________________
+             {
+             	//---
+             	controlAccesoAutorizado = controlAcceso.getAutorizado;
+             	btnLogin.label = "Login";
+             	btnLogin.enabled = true;
+             	//---
+             	if(controlAcceso.getAutorizado)
+             	 {
+             	  menuPrincipal.enabled=true;
+             	  // Muestra en la parte del menu los datos del usuario que se logueó
+             	  txtDatosUsuario.htmlText = "<b><u>Usuario:</u></b> " + controlAcceso.getUsuario;
+             	  txtDatosUsuario.htmlText+= " (" + controlAcceso.getUsuarioNombre + ")<br>";
+             	  txtDatosUsuario.htmlText+= "<b><u>Area:</u></b> " + controlAcceso.getUsuarioOrganismoArea;
+             	  txtDatosUsuario.htmlText+= " (" + controlAcceso.getUsuarioOrganismo + ")";
+             	  txtDatosUsuario.htmlText+= "<br><b><u>Servicio:</u></b> " + controlAcceso.usuario_servicio;
+             	  //------------------------------------------------------------------
+             	  viewModulos.selectedChild = canvasPrincipal;
+             	  
+
+             	  (menuPrincipal.dataProvider as XMLListCollection).getItemAt(0).menuitem[5].@enabled = controlAcceso.tienePerfil("035003");
+
+             	  
+			 	var httpPaciente : HTTPServices = new HTTPServices;
+				httpPaciente.url = "prodiase.php";
+				httpPaciente.addEventListener(ResultEvent.RESULT, function():void{
+				 	xmlDepositos = httpPaciente.lastResult as XML;
+					for each (var item : XML in xmlDepositos.deposito) {
+						if (item.@id_organismo_area_servicio == controlAcceso.id_organismo_area_servicio) {
+							id_deposito = item.@id_deposito;
+							break;
+						}
+					}
+				});
+				httpPaciente.send({rutina:"leer_depositos"});
+             	 }
+             } 
+            // Función que es convocada ante el "disparo" del evento "eveLogoutRealizado" de la clase ControlAcceso:
+            //               ______________________________
+             
+			private function fncEveLogoutRealizado (e:Event):void
+			//               ______________________________
+             {
+             	//---
+             	controlAccesoAutorizado = controlAcceso.getAutorizado;
+             	// Activo la vista del view stack en la q se solicita usuario y contraseña
+             	viewModulos.selectedChild=viewControlAcceso;
+             	// Deshabilito las opciones del menú del sistema
+			   	menuPrincipal.enabled=false;
+             	//txtUsuarioNombre.text=controlAcceso.getUsuarioNombre;
+             	txtDatosUsuario.htmlText='';
+             	
+             }
+             
+             
+            // Función que se convoca ante el disparo del evento eveLogueoImposible de la clase ControlAcceso
+            // que sucede cuando el objeto de la clase HTTPService usado en la clase ControlAcceso
+            // devuleve "fault", por ejemplo, porque se perdió la conexión al servidor, hubo un error
+            // en el script php que se convocaba, etc. 
+            //               __________________________________
+            
+            private function fncEveLogueoFalloConexion(e:Event):void
+            //               __________________________________
+             {
+             	//---
+             	controlAccesoAutorizado = controlAcceso.getAutorizado;
+             	btnLogin.label = "Login";
+             	btnLogin.enabled = true;
+             	//---
+             }
+             
+            // Esta función es la que debe convocarse con los parámetros _acceso y _login
+            // obtenidos de control_acceso_felex.php y pasados a flex a través de algún HTTPService
+            // ante el evento "Result" del mismo. 
+            //               _________________________________________________________
+            
+            private function fncControlAccesoHttpsResult(_acceso:String,_login:String): void
+            //               _________________________________________________________
+             { 
+			   if(_acceso == "NO")
+			     {  
+			     	controlAccesoAutorizado = false;
+			     	menuPrincipal.enabled=false;
+			     	viewModulos.selectedChild=viewControlAcceso;
+			     }
+             }
+             
+		    // Función inicial > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
+            //              ___________
+            
+			public function fncInicio() : void
+			//              ___________
+			 {
+			  // *********************************************************************************	
+			  // *********************************************************************************
+			  // C O N T R O L  D E  A C C E S O >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+			  // -------------------------------
+			  // Al iniciarse la aplicación, instancio el objeto controlAcceso de la clase ControlAcceso:	
+			  controlAcceso = new ControlAcceso;
+			 
+			  // Creo un evento propio del objeto controlAcceso denominado "eveLogueoRealizado", 
+			  // el cual, cuando es disparado (desde la clase ControlAcceso que se encuentra en paquete01) 
+			  // se convoca a la función "fncEveLogueoRealizado":
+			  controlAcceso.addEventListener("eveLogueoRealizado",fncEveLogueoRealizado)
+			  controlAcceso.addEventListener("eveLogueoFalloConexion",fncEveLogueoFalloConexion)
+			  controlAcceso.addEventListener("eveLogoutRealizado",fncEveLogoutRealizado)
+			  controlAcceso.addEventListener("eveServiciosTraidos",fncEveServiciosTraidos)
+			 
+			  
+			  // *********************************************************************************
+			  // C O N T R O L  D E  A C C E S O <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+			  // *********************************************************************************
+			  
+			  if (controlAcceso.getAutorizado==false)
+			   {
+			   	viewModulos.selectedChild=viewControlAcceso;
+			   	viewModulos.visible=true;
+			   	menuPrincipal.enabled=false;
+			   }	
+			 }
+			// Fin funcion inicial < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < 
+			  
+			 
+			// ---------------------------------------------------------------------------------
+			// Función que captura el evento "eveModulosHttpsResult", disparada
+			// desde el manejador del evento "result" de los objetos de clase HTTPService 
+			// que se encuentran en los módulos que son convocados por la aplicación principal.
+			// > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > 
+			//              ________________________________
+			
+			public function fncEveModulosHttpsResult(e:Event):void
+			//              _________________________________
+			 {
+			 	var _acceso : String = (e.target.get_acceso);
+			 	if(_acceso=="NO")
+			 	  {
+			     	controlAccesoAutorizado = false;
+			     	menuPrincipal.enabled=false;
+			     	viewModulos.selectedChild=viewControlAcceso
+			 	  }
+			 } 
+           // < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < 
+		   private function fncOpcionMenu(e:MenuEvent):void
+		    {
+				this.verticalScrollPosition = 0;
+				//this.COLA.fncDetenerTimer();
+				var twnImpresion : TitleWindow_Impresion;
+				var httpService : HTTPServices;
+				var reportPacientes : Report_Pacientes;
+				
+		    	var h : HTTPService = new HTTPService;
+		    	var url : String = h.rootURL.substring(0, h.rootURL.lastIndexOf("/")) + "/impresion.php";
+		    	switch(e.item.@id.toString())
+				{	
+				    case "vademecum":
+				        //viewModulos.selectedChild = viewVademecum;
+				        break;
+				   	case "cie10":
+				        //viewModulos.selectedChild = viewDiagnosticos;
+				        break;
+				    case "practicas":
+				        //viewModulos.selectedChild = viewPracticas;
+				        break;
+/* 				    case "historial":
+ 				         	buscarHistorial = new buscar;
+				         	buscarHistorial.addEventListener("verHistorial",fncHistorialBusqueda);
+				         	PopUpManager.addPopUp(buscarHistorial,this,true);
+             				PopUpManager.centerPopUp(buscarHistorial); 
+				        break; */
+				  /*  case "ingreso":				    	
+				        viewModulos.selectedChild = viewIngreso;
+				        if (Ingreso) {
+				        	Ingreso.fncInit();	
+				        }				        
+				        break*/
+				    case "cambiarPassword":
+				    	var cambiarPasswordPopUp : ControlAccesoCambiarPasswordPopUp = new ControlAccesoCambiarPasswordPopUp;
+             			PopUpManager.addPopUp(cambiarPasswordPopUp,this,true);
+             			PopUpManager.centerPopUp(cambiarPasswordPopUp);
+				        break;
+				    case "actualizacion":
+						viewModulos.selectedChild = canvasPrincipal;
+				        break;
+				    case "hospital":
+						viewModulos.selectedChild = canvasEntregas;
+				        break;
+				    case "historial":
+						var twnHistorial : TitleWindow_Historial = new TitleWindow_Historial;
+						twnHistorial.xmlDepositos = xmlDepositos;
+						twnHistorial.id_deposito = id_deposito;
+						PopUpManager.addPopUp(twnHistorial, this, true);
+             			PopUpManager.centerPopUp(twnHistorial);
+				        break;
+				    case "altaprodep":
+						var twn : TitleWindow_AltaProDep = new TitleWindow_AltaProDep;
+						PopUpManager.addPopUp(twn, this, true);
+             			PopUpManager.centerPopUp(twn);
+				        break;
+				    case "pacientesx":
+						var twnPx : TitleWindow_PacientesX = new TitleWindow_PacientesX;
+						PopUpManager.addPopUp(twnPx, this, true);
+             			PopUpManager.centerPopUp(twnPx);
+				        break;
+				    case "consultacombinada":
+						var twnCC : TitleWindow_Consulta_Combinada = new TitleWindow_Consulta_Combinada;
+						PopUpManager.addPopUp(twnCC, this, true);
+             			PopUpManager.centerPopUp(twnCC);
+				        break;
+				    case "auditoria":
+						var twnA : TitleWindow_Auditoria = new TitleWindow_Auditoria;
+						twnA.xmlDepositos = xmlDepositos;
+						PopUpManager.addPopUp(twnA, this, true);
+             			PopUpManager.centerPopUp(twnA);
+				        break;
+				    case "stock":
+        				twnImpresion = new TitleWindow_Impresion;
+        				twnImpresion.width = this.width;
+        				twnImpresion.height = this.height;
+        				var reportStock: Report_Stock = new Report_Stock;
+
+						PopUpManager.addPopUp(twnImpresion, this, true);
+						PopUpManager.centerPopUp(twnImpresion);
+
+						httpService = new HTTPServices;
+						httpService.url = "prodiase.php";
+						httpService.addEventListener("result", function():void{
+	        				reportStock.xmlModel = httpService.lastResult as XML;
+	        				//Alert.show(reportStock.xmlModel.toXMLString());
+	        				var aux : Date = new Date;
+	        				//reportStock.xmlModel.@titulo = "Listado de Stock " + aux.getFullYear() + "-" + (aux.getMonth() + 1) + "-" + aux.getDate();
+	        				reportStock.xmlModel.@titulo = "Listado de Stock " + aux.getFullYear() + "-" + (aux.getMonth() + 1) + "-" + aux.getDate() + " " + aux.getHours() + ":" + aux.getMinutes() + ":" + aux.getSeconds();
+	        				twnImpresion.preview.doc = new Document(reportStock, null, org.doc.PaperFormat.A4);
+						});
+						httpService.send({rutina:"leer_stock"});
+
+				        break;
+				    case "listado_especial":
+				    	navigateToURL(new URLRequest(url + "?rutina=listado_especial"));
+				    	break;
+				    case "estadistica":
+				    	navigateToURL(new URLRequest("../prodiase_est"));
+				    	break;
+				    case "pacientes":
+				    	navigateToURL(new URLRequest(url + "?rutina=imprimir_pacientes"));
+				    	break;
+/* 				    	
+        				twnImpresion = new TitleWindow_Impresion;
+        				twnImpresion.width = this.width;
+        				twnImpresion.height = this.height;
+        				reportPacientes = new Report_Pacientes;
+
+						PopUpManager.addPopUp(twnImpresion, this, true);
+						PopUpManager.centerPopUp(twnImpresion);
+
+						httpService = new HTTPServices;
+						httpService.url = "prodiase.php";
+						httpService.addEventListener("result", function():void{
+							//Alert.show((httpService.lastResult as XML).toXMLString());
+	        				reportPacientes.xmlModel = httpService.lastResult as XML;
+	        				reportPacientes.xmlModel.@titulo = "Listado de Pacientes";
+	        				twnImpresion.preview.doc = new Document(reportPacientes, null, org.doc.PaperFormat.A4);
+						});
+						httpService.send({rutina:"leer_pacientes"});
+
+				         */break;
+				        
+				    case "pacientesa":
+				    	navigateToURL(new URLRequest(url + "?rutina=imprimir_pacientes&estado=A"));
+				    	break;
+/* 				    	
+        				twnImpresion = new TitleWindow_Impresion;
+        				twnImpresion.width = this.width;
+        				twnImpresion.height = this.height;
+        				reportPacientes = new Report_Pacientes;
+
+						PopUpManager.addPopUp(twnImpresion, this, true);
+						PopUpManager.centerPopUp(twnImpresion);
+
+						httpService = new HTTPServices;
+						httpService.url = "prodiase.php";
+						httpService.addEventListener("result", function():void{
+							//Alert.show((httpService.lastResult as XML).toXMLString());
+	        				reportPacientes.xmlModel = httpService.lastResult as XML;
+	        				reportPacientes.xmlModel.@titulo = "Listado de Pacientes activos";
+	        				twnImpresion.preview.doc = new Document(reportPacientes, null, org.doc.PaperFormat.A4);
+						});
+						httpService.send({rutina:"leer_pacientes", activos: true});
+
+				         */break;
+				        
+				    case "pacientesi":
+				    	navigateToURL(new URLRequest(url + "?rutina=imprimir_pacientes&estado=I"));
+				    	break;
+/* 				    	
+        				twnImpresion = new TitleWindow_Impresion;
+        				twnImpresion.width = this.width;
+        				twnImpresion.height = this.height;
+        				reportPacientes = new Report_Pacientes;
+
+						PopUpManager.addPopUp(twnImpresion, this, true);
+						PopUpManager.centerPopUp(twnImpresion);
+
+						httpService = new HTTPServices;
+						httpService.url = "prodiase.php";
+						httpService.addEventListener("result", function():void{
+							//Alert.show((httpService.lastResult as XML).toXMLString());
+	        				reportPacientes.xmlModel = httpService.lastResult as XML;
+	        				reportPacientes.xmlModel.@titulo = "Listado de Pacientes inactivos";
+	        				twnImpresion.preview.doc = new Document(reportPacientes, null, org.doc.PaperFormat.A4);
+						});
+						httpService.send({rutina:"leer_pacientes", activos: false});
+
+				         */break;
+				        
+				    case "paciente_inactivo":
+						var twnPI : TitleWindow_PacienteInactivo = new TitleWindow_PacienteInactivo;
+						PopUpManager.addPopUp(twnPI, this, true);
+             			PopUpManager.centerPopUp(twnPI);
+				        break;
+				    case "logout":
+				        viewModulos.selectedChild = viewSalir;
+				        break;				 				        
+				    default:
+				        Alert.show("Opción (" + e.item.@id + ") aún no implementada.","M E N U");		    			
+				        break;
+				}
+		    }	
+		    
+		    //funcion que llama al modulo consulta pasandole como parametro el id del turno
+		    private function fncFicha(e:Event):void
+		    { 
+/* 		    	viewModulos.selectedChild = viewConsulta;
+		    	if (CONSULTA){
+		    		CONSULTA.fncInit(COLA.idIngresoMovimiento);
+		    	} */
+		    }
+		    //inicializa el modulo consulta para realizar una nueva
+		    private function fncInitConsulta():void
+		    {
+		    	//CONSULTA.fncInit(COLA.idIngresoMovimiento);
+		    }
+		    
+		    private function fncEgreso(e:Event):void
+		    {
+/* 		    	viewModulos.selectedChild = viewEgreso;
+		    	if (EGRESO){
+		    		EGRESO.fncInit(COLA.idIngresoMovimiento);
+		    	} */
+		    }
+		    
+		    private function fncInitEgreso():void
+		    {
+		    	//EGRESO.fncInit(COLA.idIngresoMovimiento);
+		    }
+		    
+		    private function fncPase(e:Event):void
+		    {
+/* 		    	viewModulos.selectedChild = viewPase;
+		    	if (PASE){
+		    		PASE.fncInit(COLA.idIngresoMovimiento);
+		    	} */
+		    }
+		    
+		    private function fncInitPase():void
+		    {
+		    	//PASE.fncInit(COLA.idIngresoMovimiento);
+		    }
+		    
+		    private function fncViewHistorial():void{
+/* 		    	viewModulos.selectedChild = viewHistorial;
+		    	if (HISTORIAL){
+		    		HISTORIAL.idPersona = CONSULTA.xmlDatosPaciente.paciente.@id_persona;
+		    		HISTORIAL.fncInit();
+		    	}
+		    	idPersona = CONSULTA.xmlDatosPaciente.paciente.@id_persona;
+		    	DesdeConsulta = true; */
+		    }
+		    
+		    private function fncInitHistorial():void{
+/* 		    	HISTORIAL.idPersona = idPersona;
+		    	HISTORIAL.fncInit(); */
+		    }
+		    
+		    private function fncHistorialBusqueda(e:Event):void{
+/*  		    	viewModulos.selectedChild = viewHistorial;
+ 		    	if (HISTORIAL){
+		    		HISTORIAL.idPersona = buscarHistorial.idPersona;
+		    		HISTORIAL.fncInit();
+		    	}
+		    	idPersona = buscarHistorial.idPersona;
+		    	DesdeConsulta = false;
+		    	PopUpManager.removePopUp(e.target as buscar); */
+		    }
+		    private function fncSelectConsulta():void{
+		    	//viewModulos.selectedChild = viewConsulta;
+		    }
+		]]>
+	</mx:Script>
+
+	<!--
+	< V I E W S T A C K >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >>
+	-->		
+	<mx:ViewStack id="viewModulos" borderColor="#740611" top="10" left="10" bottom="10" right="10">
+		<!--
+		<< v i e w:   L O G U E O > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->		
+		<mx:Canvas label="Logueo" width="100%" height="100%" id="viewControlAcceso">
+			<mx:Panel layout="absolute" id="pnlControlAcceso" title="Acceso al Sistema" horizontalAlign="center" horizontalCenter="0" verticalCenter="-53">
+				<mx:Form x="10" y="10" width="100%" height="138">
+					<mx:FormItem label="Usuario">
+						<mx:TextInput focusOut="fncTraerServicios()" id="textInputUsuario" width="120"/>
+					</mx:FormItem>
+					<mx:FormItem label="Password">
+						<mx:TextInput id="textInputPassword" displayAsPassword="true" width="119"/>
+					</mx:FormItem>
+					<mx:FormItem label="Area">
+						<mx:ComboBox dataProvider="{xmlServiciosUser.areaservicio}" labelField="@area" enabled="false" editable="false" id="cmbArea" width="285"></mx:ComboBox>
+					</mx:FormItem>
+					<mx:FormItem label="Servicio">
+						<mx:ComboBox dataProvider="{xmlServiciosUser.areaservicio.(@id_area==cmbArea.selectedItem.@id_area).servicio}" labelField="@servicio" enabled="false" editable="false" id="cmbServicio" width="285"></mx:ComboBox>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:ControlBar horizontalAlign="right">
+					<mx:Button label="?" 
+						       labelPlacement="left" 
+						       id="btnLoginHelp" fontWeight="normal" alpha="0.7">
+					 <mx:click>
+			 	<![CDATA[
+			 	    var txtDetallesAcceso:String='';
+			 	    if (controlAcceso.getAutorizado)
+			 	      {
+			 	      	txtDetallesAcceso+= "Posé acceso al sistema. ";
+			 	      }
+			 	     else
+			 	      {
+			 	      	if (controlAcceso.getUsuario)
+			 	      	 {
+			 	      	  txtDetallesAcceso+= "El usuario "+controlAcceso.getUsuario+" NO posé acceso al sistema. ";
+			 	      	 }
+			 	      	else
+			 	      	 {
+			 	      	  txtDetallesAcceso+= "No intentó loguearse aún. ";
+			 	      	 }  
+			 	      } 
+			 	      
+			 		if(controlAcceso.getMensajeError)
+			 		  {
+			 		  	
+			 		  	Alert.show(txtDetallesAcceso+" "+controlAcceso.getMensajeError,"ERROR DE ACCESO AL SISTEMA:");
+			 		  }
+			 		 else
+			 		  {
+			 		  	Alert.show(txtDetallesAcceso+" "+"Ingrese sus datos de acceso (usuario y contraseña) respetando mayúsculas y minúsculas para iniciar una nueva sesión o si desea cambiar de usuario.","ACCESO AL SISTEMA");
+			 		  	
+			 		  }
+			 	]]>
+			 </mx:click>	       
+					   </mx:Button>
+					<mx:Button label="Login" 
+						       labelPlacement="left" 
+						       id="btnLogin" 
+						       click="fncLogin()" />
+				</mx:ControlBar>
+			</mx:Panel>
+		</mx:Canvas>
+		<!--
+		<< v i e w:  Pantalla Principal  > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->	
+		<mx:Canvas id="canvasPrincipal" width="100%" height="100%">
+			<ns10:Module_Principal id="modulePrincipal" top="0" left="0" bottom="0" right="0">
+			</ns10:Module_Principal>
+		</mx:Canvas>
+		
+		<mx:Canvas id="canvasEntregas" width="100%" height="100%">
+			<ns11:Module_Entregas id="moduleEntregas" creationComplete="moduleEntregas.xmlDepositos = xmlDepositos; moduleEntregas.id_deposito = id_deposito;" top="0" left="0" bottom="0" right="0">
+
+			</ns11:Module_Entregas>
+
+		</mx:Canvas>
+		
+<!--		<mx:VBox id="viewPrincipal" width="100%" height="100%">
+			<ns1:cola_internacion id="COLA" 
+				EventFicha="fncFicha(event)" 
+				EventEgreso="fncEgreso(event)"
+				EventPase="fncPase(event)" 
+				eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />	
+		</mx:VBox>-->
+		
+		<!--
+		<< v i e w:  CONSULTA  > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->	
+<!--		<mx:Canvas id="viewConsulta" width="100%" height="100%">
+			<ns2:consulta id="CONSULTA" ViewHistorial="fncViewHistorial()" creationComplete="fncInitConsulta()"  SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />	
+		</mx:Canvas>-->
+		<!--
+		<< v i e w:  EGRES0  > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->	
+<!--		<mx:Canvas id="viewEgreso" width="100%" height="100%">
+			<ns8:egreso id="EGRESO" creationComplete="fncInitEgreso()"  SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />	
+		</mx:Canvas>-->
+		<!--
+		<< v i e w:  PASE A OTRO SERVICIO  > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->	
+<!--		<mx:Canvas id="viewPase" width="100%" height="100%">
+			<ns9:pase id="PASE" creationComplete="fncInitPase()"  SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />	
+		</mx:Canvas>-->
+		<!--
+		<< v i e w:  INGRESO PACIENTE  > > > > > > > > > > > > > > > > > > > > > > > > > >
+					
+		<mx:Canvas label="Ingreso" width="100%" height="100%" id="viewIngreso">
+			<ns7:admision id="Ingreso" SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" horizontalCenter="0" verticalCenter="-15">
+			</ns7:admision>
+		</mx:Canvas>-->
+		<!--
+		<< v i e w:  CONSULTAR VADEMECUM > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->	
+<!--		<mx:Canvas id="viewVademecum" width="100%" height="100%">
+			<ns3:vademecum id="VADEMECUM" SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />	
+		</mx:Canvas>-->
+		
+		<!--
+		<< v i e w:  CONSULTAR PRACTICAS > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->	
+<!--		<mx:Canvas id="viewPracticas" width="100%" height="100%">
+			<ns5:practicas id="PRACTICAS" SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />	
+		</mx:Canvas>-->
+		
+		<!--
+		<< v i e w:  CONSULTAR DIAGNOSTICOS > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->	
+<!--		<mx:Canvas id="viewDiagnosticos" width="100%" height="100%">
+			<ns4:cie10 id="CIE10" SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />	
+		</mx:Canvas>-->
+		
+		<!--
+		<< v i e w:  CONSULTAR HISTORIAL > > > > > > > > > > > > > > > > > > > > > > > > > >
+		-->
+<!--		<mx:Canvas width="100%" height="100%" id="viewHistorial">
+			<ns6:historial id="HISTORIAL" creationComplete="fncInitHistorial()" SelectConsulta="fncSelectConsulta()" SelectPrincipal="fncSelectPrincipal()" eveModulosHttpsResult="fncEveModulosHttpsResult(event)" />
+		</mx:Canvas>-->
+		
+		<!--
+		<< v i e w:  C I E R R E  D E  S E S I O N > > > > > > > > > > > > > > > > > > > > > > > > > >
+		 -->
+		<mx:Canvas label="Salir" width="100%" height="100%" id="viewSalir" >
+		  <mx:show>
+		  	<![CDATA[
+		  	    lblCerrandoSesion.htmlText = "<i>Cerrando Sesión de <b>" + controlAcceso.getUsuario + "</b>...</i>";
+		  	    controlAcceso.logout();
+		  	]]>
+		  </mx:show>
+		  <mx:Label id="lblCerrandoSesion" htmlText="Cerrando Sesion..." fontSize="15" x="254.5" y="10">
+		  </mx:Label>
+		</mx:Canvas>	
+	</mx:ViewStack> 
+	<!--
+	Fin V I E W S T A C K << << << << << << << << << << << << << << << << << << << << << << << << << << <<  
+	-->
+	<mx:ApplicationControlBar dock="true" height="53" x="-1" y="-1">
+	
+		<mx:Grid>
+			<mx:GridRow width="100%" height="14">
+				<mx:GridItem width="100%" height="100%">
+					<mx:Label text="PRODIASE" fontWeight="bold"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%" height="25">
+				<mx:GridItem width="100%" height="100%">
+				
+				    <!-- M E N U  P R I N C I P A L >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
+					<mx:MenuBar labelField="@etiqueta" itemClick="fncOpcionMenu(event)" id="menuPrincipal">
+						<mx:XMLList xmlns="">
+<!--							<menuitem etiqueta="Pacientes" id="consultar">
+							 	<menuitem etiqueta="Registrar Ingreso" id="ingreso" />
+							 	<menuitem etiqueta="Ver Historial" id="historial" />
+							</menuitem>
+							<menuitem etiqueta="Consultar..." id="consultar">
+							 	<menuitem etiqueta="Vademecum" id="vademecum" />
+							 	<menuitem etiqueta="Diagnosticos" id="cie10" />
+							 	<menuitem etiqueta="Nomencaldor Practicas y Estudios" id="practicas" />
+							</menuitem>-->
+							<menuitem etiqueta="Movimientos" id="movimientos">
+							 	<menuitem etiqueta="Pacientes" id="actualizacion" />
+							 	<menuitem etiqueta="Entregas a hospital/area" id="hospital" />
+							 	<menuitem type="separator"/>
+							 	<menuitem etiqueta="Alta producto/depósito" id="altaprodep" />
+							 	<menuitem type="separator"/>
+							 	<menuitem etiqueta="Pacientes sin entregas" id="paciente_inactivo" />
+							</menuitem>
+<!--							<menuitem etiqueta="Pacientes" id="impresion">-->
+<!--							 	<menuitem etiqueta="Búsqueda" id="pacientesx" />-->
+<!--							 	<menuitem etiqueta="Listado" id="pacientes" />-->
+<!--							</menuitem>-->
+							<menuitem etiqueta="Consulta" id="consulta">
+								<menuitem etiqueta="Listado de pacientes">
+									<menuitem etiqueta="Todos" id="pacientes" />
+									<menuitem etiqueta="Activos" id="pacientesa" />
+									<menuitem etiqueta="Inactivos" id="pacientesi" />
+								</menuitem>
+								<menuitem etiqueta="Stock de productos" id="stock" />
+							 	<menuitem etiqueta="Historial de entregas" id="historial" />
+							 	<menuitem etiqueta="Consulta combinada" id="consultacombinada" />
+							 	<menuitem type="separator"/>
+							 	<menuitem etiqueta="Auditoria" id="auditoria" />
+							 	<menuitem type="separator"/>
+<!--							 	<menuitem etiqueta="Listado especial" id="listado_especial" />-->
+							 	<menuitem etiqueta="Estadística" id="estadistica" />
+							</menuitem>
+							<menuitem etiqueta="Usuario" id="usuario">
+							 	<menuitem etiqueta="Cerrar Sesión" id="logout" />
+							 	<menuitem etiqueta="Cambiar Contraseña" id="cambiarPassword" />
+							</menuitem>
+						</mx:XMLList>
+					</mx:MenuBar>
+				    <!-- M E N U  P R I N C I P A L <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -->
+					
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+		<mx:Text id="txtDatosUsuario" height="100%" width="100%" fontSize="9"  textAlign="center" />
+		
+	</mx:ApplicationControlBar>
+</mx:Application>

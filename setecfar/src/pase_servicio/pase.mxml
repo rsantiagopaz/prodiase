@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ns1="com.adobe.flex.extras.controls.*" xmlns:clases="clases.*" >
+	<mx:Metadata>
+		[Event(name="eveModulosHttpsResult")]
+		[Event(name="SelectPrincipal")]
+	</mx:Metadata>
+	<mx:Script source="pase_as.as" />
+	<mx:Panel layout="vertical" title="Pase a Otro Servicio">
+	<mx:Form id="form1">
+		<mx:FormItem label="Fecha de Pase:">
+			<clases:DateFieldEs width="132" id="dfPase"/>
+		</mx:FormItem>
+		<mx:FormItem label="Medico que Otorga:">
+			<mx:ComboBox width="221" id="cmbMedico" dataProvider="{_xmlMedicos.medico}" labelField="@persona_nombre" editable="false"></mx:ComboBox>
+		</mx:FormItem>
+		<mx:FormItem label="Servicio:">
+			<mx:ComboBox width="380" id="cmbServicio" enabled="true" dataProvider="{_xmlServicios.servicio}" labelField="@denominacion" editable="false"></mx:ComboBox>
+		</mx:FormItem>	
+		<mx:FormItem label="Observaciones:">
+				<mx:TextArea id="txaObservaciones" width="683" height="103"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:ControlBar horizontalAlign="right">
+			<mx:Button label="Cerrar" id="btnCerrar"  icon="@Embed(source='../img/close.png')" click="fncCerrar(event)"/>
+			<mx:Button label="Guardar" id="btnGuardar"  icon="@Embed(source='../img/save.png')"/>
+		</mx:ControlBar>
+	</mx:Panel>
+	
+</mx:Module>

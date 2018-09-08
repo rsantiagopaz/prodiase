@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="horizontal"
+	xmlns:ns1="com.adobe.flex.extras.controls.*"
+	creationComplete="fncInit(event)">
+	<mx:Metadata>
+		[Event(name="eveModulosHttpsResult")]
+		[Event(name="EventFicha")]
+		[Event(name="EventEgreso")]
+		[Event(name="EventPase")]
+	</mx:Metadata>
+	<mx:Script source="cola_internacion_as.as" />		
+	<mx:Panel layout="vertical" title="Lista de Pacientes Internados">
+		<mx:DataGrid id="gridPacientes" width="750" height="370" dataProvider="{httpPacientes.lastResult.pacientes}">
+			<mx:columns>
+				<mx:DataGridColumn visible="false" dataField="@id_ingreso_movimiento"/>
+				<mx:DataGridColumn headerText="Fecha de Ingreso" width="120" dataField="@fecha_ingreso"/>
+				<mx:DataGridColumn headerText="Nombre y Apellido" dataField="@apeynom"/>
+				<mx:DataGridColumn headerText="Tipo Documento" width="120" dataField="@tipo_doc"/>
+				<mx:DataGridColumn headerText="Nro. Documento" width="120" dataField="@nrodoc"/>
+				<mx:DataGridColumn headerText="F" width="30" visible="true"> 
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalAlign="center">	
+								<mx:Button  width="24" height="18" icon="@Embed(source='../img/consulta.png')"
+									click="outerDocument.fncVer()" toolTip="Ver Ficha"
+									/>
+							</mx:HBox>						
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="P" width="30" visible="true"> 
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalAlign="center">	
+								<mx:Button  width="24" height="18" icon="@Embed(source='../img/pase.png')"
+									click="outerDocument.fncPase()" toolTip="Pase A otro Servicio"
+									/>
+							</mx:HBox>						
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="E" width="30" visible="true"> 
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalAlign="center">	
+								<mx:Button  width="24" height="18" icon="@Embed(source='../img/vineta.png')"
+									click="outerDocument.fncEgreso()" toolTip="Dar Egreso"
+									/>
+							</mx:HBox>						
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:Form>
+			<mx:FormItem label="Nombre del Paciente:">
+				<mx:TextInput id="txtNombrePaciente" width="226"/>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:Panel>
+</mx:Module>

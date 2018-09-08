@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="264" 
+	height="174" 
+	title="Control de Acceso" 
+	showCloseButton="false"
+	
+	>
+	
+	
+	
+    <mx:Script>
+		<![CDATA[
+			
+			import mx.managers.PopUpManager;
+		
+		    // Agrego propiedades a la clase ControlAcceso.as 
+		    // y defino los getters y setters de la misma
+		    // y los eventos ------------------------------------------------------ 
+		    private var _usuario : String;
+		    private var _password : String;
+		    private var _sistema_id : String;
+		    private var _autorizado : Boolean = false;
+		    
+		    // Setters: ------------------------------------------------
+		    public function set setUsuario(usuario:String) : void
+		     {
+		     	_usuario = usuario;
+		     }
+		     
+		    public function set setPassword(password:String) : void
+		     {
+		     	_password = password;
+		     }
+		      
+		    public function set setSistemaId(sistema_id:String) : void
+		     {
+		     	_sistema_id = sistema_id;
+		     }
+		      
+		    // Getters: ------------------------------------------------
+		    public function get getUsuario() : String
+		 	 {
+				return _usuario;
+		 	 }  
+		 
+			public function get getPassword() : String
+			 {
+				return _password;
+			 }		 	 
+			 
+			public function get getSistemaId() : String
+			 {
+				return _sistema_id;
+			 }		 
+
+			public function get getAutorizado() : Boolean
+			 {
+				return _autorizado;
+			 }				 
+            
+            // Eventos: ------------------------------------------------
+			private function fncPresionoBtnLogin(e:Event) : void
+		 	 {
+		 	  _usuario  = txiUsuario.text;
+		 	  _password = txiPassword.text;	
+		 	  dispatchEvent(new Event ("presionoBtnLogin"));	
+		 	 }	 
+		    // ---------------------------------------------------------
+		    
+			public function cerrarPopUp():void
+		 	{
+		 		PopUpManager.removePopUp(this);
+		 	}
+		 
+		]]>
+	</mx:Script>	
+	
+	
+	
+	<mx:Form width="100%" height="100%">
+		<mx:FormItem label="Usuario">
+			<mx:TextInput id="txiUsuario" width="120"/>
+		</mx:FormItem>
+		<mx:FormItem label="Password">
+			<mx:TextInput id="txiPassword" displayAsPassword="true" width="119"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button label="Login" id="btnLogin" click="fncPresionoBtnLogin(event)"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>
